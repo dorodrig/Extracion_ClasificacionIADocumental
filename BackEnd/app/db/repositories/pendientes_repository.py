@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, String
+from sqlalchemy import or_, String, func as sa_func
 from app.db.models.documentos_pendientes import DocumentoPendiente
 from app.db.models.contexto_resultado_db import AgenteContextoResultados
 from app.db.models.documentos_lote import DocumentoLote, LoteProcesamiento
@@ -11,7 +11,11 @@ class PendientesRepository:
         self.db = db
 
     def get_pendientes(self, skip: int = 0, limit: int = 100, query: Optional[str] = None, cliente_id: Optional[int] = None):
-        db_query = self.db.query(AgenteContextoResultados, DocumentoLote, LoteProcesamiento).join(
+        db_query = self.db.query(
+            AgenteContextoResultados, DocumentoLote, LoteProcesamiento
+        ).select_from(
+            AgenteContextoResultados
+        ).join(
             DocumentoLote, AgenteContextoResultados.documento_id == DocumentoLote.id
         ).join(
             LoteProcesamiento, DocumentoLote.lote_id == LoteProcesamiento.id
@@ -28,7 +32,7 @@ class PendientesRepository:
                 )
             )
             
-        total = db_query.count()
+        total = db_query.with_entities(sa_func.count(AgenteContextoResultados.id)).scalar()
         db_query = db_query.order_by(AgenteContextoResultados.id.desc())
         results = db_query.offset(skip).limit(limit).all()
         
@@ -48,7 +52,11 @@ class PendientesRepository:
         return items, total
 
     def get_pendiente_by_id(self, pendiente_id: int):
-        result = self.db.query(AgenteContextoResultados, DocumentoLote, LoteProcesamiento).join(
+        result = self.db.query(
+            AgenteContextoResultados, DocumentoLote, LoteProcesamiento
+        ).select_from(
+            AgenteContextoResultados
+        ).join(
             DocumentoLote, AgenteContextoResultados.documento_id == DocumentoLote.id
         ).join(
             LoteProcesamiento, DocumentoLote.lote_id == LoteProcesamiento.id
@@ -69,7 +77,11 @@ class PendientesRepository:
         return None
 
     def update_pendiente_status(self, pendiente_id: int, estado: str, campos_corregidos: Optional[Dict[str, Any]] = None):
-        result = self.db.query(AgenteContextoResultados, DocumentoLote, LoteProcesamiento).join(
+        result = self.db.query(
+            AgenteContextoResultados, DocumentoLote, LoteProcesamiento
+        ).select_from(
+            AgenteContextoResultados
+        ).join(
             DocumentoLote, AgenteContextoResultados.documento_id == DocumentoLote.id
         ).join(
             LoteProcesamiento, DocumentoLote.lote_id == LoteProcesamiento.id
@@ -96,7 +108,11 @@ class PendientesRepository:
         return None
 
     def update_pendiente_rechazo(self, pendiente_id: int, motivo: str):
-        result = self.db.query(AgenteContextoResultados, DocumentoLote, LoteProcesamiento).join(
+        result = self.db.query(
+            AgenteContextoResultados, DocumentoLote, LoteProcesamiento
+        ).select_from(
+            AgenteContextoResultados
+        ).join(
             DocumentoLote, AgenteContextoResultados.documento_id == DocumentoLote.id
         ).join(
             LoteProcesamiento, DocumentoLote.lote_id == LoteProcesamiento.id
