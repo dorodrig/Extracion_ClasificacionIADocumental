@@ -56,3 +56,15 @@ export async function updateRule(ruleId: number, data: RuleUpdatePayload): Promi
   }
   return response.data.data;
 }
+
+/**
+ * Duplica una regla existente.
+ * Endpoint: POST /api/v1/rules/{id}/duplicate
+ */
+export async function duplicateRule(ruleId: number): Promise<Rule> {
+  const response = await api.post<APIResponse<Rule>>(`/api/v1/rules/${ruleId}/duplicate`);
+  if (!response.data.data) {
+    throw new Error(response.data.error ?? 'Error al duplicar la regla');
+  }
+  return response.data.data;
+}

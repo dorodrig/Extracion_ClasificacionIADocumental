@@ -6,6 +6,10 @@
  * Incluye panel lateral (drawer) de solo lectura para detalle.
  */
 import React, { useState, useMemo } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { duplicateRule } from '../../services/ruleService';
 import type { Rule } from '../../types/rule.types';
 import styles from './RuleList.module.scss';
 
@@ -51,6 +55,20 @@ const ITEMS_PER_PAGE = 10;
 export const RuleList: React.FC<RuleListProps> = ({ rules, onEdit, onNewRule: _onNewRule }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [detailRule, setDetailRule] = useState<Rule | null>(null);
+  
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  const duplicateMutation = useMutation({
+    mutationFn: (ruleId: number) => duplicateRule(ruleId),
+    onSuccess: () => {
+      toast.success('✓ Regla duplicada exitosamente');
+      queryClient.invalidateQueries({ queryKey: ['rules'] });
+    },
+    onError: (error: Error) => {
+      toast.error(`✗ ${error.message}`);
+    },
+  });
 
   const totalPages = Math.ceil(rules.length / ITEMS_PER_PAGE);
   const paginatedRules = useMemo(
@@ -63,8 +81,7 @@ export const RuleList: React.FC<RuleListProps> = ({ rules, onEdit, onNewRule: _o
   );
 
   const handleStartProcess = (rule: Rule) => {
-    // TODO: HU-02 — Redirigir a la pantalla de ingesta con la regla seleccionada
-    console.info(`GRM: Iniciar proceso con regla ID=${rule.id}`);
+    navigate(`/ingesta?rule_id=${rule.id}`);
   };
 
   return (
@@ -153,6 +170,15 @@ export const RuleList: React.FC<RuleListProps> = ({ rules, onEdit, onNewRule: _o
                           type="button"
                         >
                           ✏ Editar
+                        </button>
+                        <button
+                          className={styles['grm-rule-list__btn-duplicate']}
+                          onClick={() => duplicateMutation.mutate(rule.id)}
+                          disabled={duplicateMutation.isPending}
+                          type="button"
+                          style={{ margin: '0 4px' }}
+                        >
+                          📋 Duplicar
                         </button>
                         <button
                           className={styles['grm-rule-list__btn-detail']}

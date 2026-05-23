@@ -88,6 +88,7 @@ export const RuleForm: React.FC<RuleFormProps> = ({
     watch,
     reset,
     setValue,
+    setError,
     formState: { errors, isValid },
   } = methods;
 
@@ -98,6 +99,23 @@ export const RuleForm: React.FC<RuleFormProps> = ({
 
   // Watch patron for live preview
   const patronValue = watch('patron_carpeta');
+  const camposExtraer = watch('campos_extraer');
+
+  // Validate variables in patron_carpeta (CA-07)
+  const invalidVariables = useMemo(() => {
+    if (!patronValue) return [];
+    const matches = patronValue.match(/\{([^}]+)\}/g);
+    if (!matches) return [];
+    
+    const extractedNames = camposExtraer.map((c: any) => c.nombre);
+    const validVars = [...VARIABLES_PATRON, ...extractedNames];
+    
+    const invalid = matches
+      .map(m => m.replace(/[{}]/g, ''))
+      .filter(v => !validVars.includes(v));
+      
+    return Array.from(new Set(invalid));
+  }, [patronValue, camposExtraer]);
 
   // --- Mutations ---
   const createMutation = useMutation({
@@ -108,8 +126,12 @@ export const RuleForm: React.FC<RuleFormProps> = ({
       queryClient.invalidateQueries({ queryKey: ['rules', clienteId] });
       onSaved();
     },
-    onError: (error: Error) => {
-      toast.error(`✗ ${error.message}`);
+    onError: (error: any) => {
+      if (error?.response?.status === 409 || error.message.toLowerCase().includes('ya existe')) {
+        setError('nombre', { type: 'manual', message: 'El nombre de la regla ya existe para este cliente' });
+      } else {
+        toast.error(`✗ ${error.message}`);
+      }
     },
   });
 
@@ -121,8 +143,12 @@ export const RuleForm: React.FC<RuleFormProps> = ({
       queryClient.invalidateQueries({ queryKey: ['rules', clienteId] });
       onSaved();
     },
-    onError: (error: Error) => {
-      toast.error(`✗ ${error.message}`);
+    onError: (error: any) => {
+      if (error?.response?.status === 409 || error.message.toLowerCase().includes('ya existe')) {
+        setError('nombre', { type: 'manual', message: 'El nombre de la regla ya existe para este cliente' });
+      } else {
+        toast.error(`✗ ${error.message}`);
+      }
     },
   });
 
@@ -347,6 +373,11 @@ export const RuleForm: React.FC<RuleFormProps> = ({
               </code>
             </div>
           )}
+          {invalidVariables.length > 0 && (
+            <p className={styles['grm-rule-form__error']} style={{ marginTop: '8px' }}>
+              ⚠ Advertencia: Las siguientes variables no existen: {invalidVariables.map(v => `{${v}}`).join(', ')}
+            </p>
+          )}
         </section>
 
         {/* === Sección 4: Configuración OCR (Solo lectura) === */}
@@ -365,11 +396,12 @@ export const RuleForm: React.FC<RuleFormProps> = ({
                 style={{ width: '95%' }}
               ></div>
             </div>
-            <span className={styles['grm-rule-form__ocr-value']}>95%</span>
+            <span className={styles['grm-rule-form__ocr-value']}>
+              95% <span title="El sistema descartará campos con confianza inferior al 95%. Este valor es fijo por estándar del proceso GRM." style={{ cursor: 'help', color: '#6b7280', marginLeft: '4px' }}>ℹ</span>
+            </span>
           </div>
           <p className={styles['grm-rule-form__ocr-info']}>
-            ℹ El sistema descartará campos con confianza inferior al 95%. Este
-            valor es estándar del proceso GRM.
+            El umbral de confianza está fijado al 95% para garantizar la calidad de extracción.
           </p>
         </section>
 

@@ -1,125 +1,29 @@
-# Solicitud de Revisión — Agente Frontend
-## HU-01: CA-01 a CA-06 — Configuración y Gestión de Reglas de Trabajo
+# Solicitud de Aprobación — Frontend
 
-| Campo | Valor |
-|-------|-------|
-| **Agente** | Frontend |
-| **Rama** | `HU1_CA1-CA6_DEVDAVID_ITEREACION1` |
-| **Fecha** | 2026-05-23 |
-| **Estado** | PLANNING — Esperando aprobación del Arquitecto Líder |
+**Para:** Arquitecto Líder
+**De:** Agente Frontend
+**Fecha:** 2026-05-23
+**Rama:** HU1_CA1-CA6_DEVDAVID_ITEREACION1
 
----
+He revisado el código actual de React en `C:\zData\ExtracionDatosIA\FrontEnd` y elaborado un plan técnico para implementar los Criterios de Aceptación CA-07 a CA-13 correspondientes a HU-01 (Parte 2).
 
-## 1. Resumen del Plan Propuesto
+## Resumen del Plan Técnico
 
-Se implementará la interfaz de usuario completa para gestión de Reglas de Trabajo (HU-01, CA-01 a CA-06) sobre un proyecto **React 18 + TypeScript + Vite 5** nuevo en `FrontEnd/`. 
+1. **`RuleForm.tsx` (Formulario)**
+   - **CA-07:** Agregaré un analizador regex sobre el valor `patron_carpeta` (`\{([^}]+)\}`) en tiempo real, validando los extractos encontrados contra `VARIABLES_PATRON` y la lista de `campos_extraer` definidos por el usuario en el formulario. Si hay no coincidentes, renderizaré una advertencia bajo la vista previa.
+   - **CA-08:** Modificaré el bloque de "Configuración OCR" para que sea un input disabled/visual y agregaré el ícono de tooltip nativo con la explicación descrita.
+   - **CA-12:** Interceptaré el objeto de error retornado por la mutación. Si corresponde a HTTP 409 (Regla Duplicada), emplearé el método `setError('nombre', ...)` de React Hook Form para enrutar visualmente el mensaje debajo del input del nombre.
+   - **CA-13:** Validaré la funcionalidad actual (ya presente visualmente) de radio buttons para asegurar su correcto binding con React Hook Form.
 
-La solución incluye:
-- **Scaffolding completo** del proyecto (Vite + React + TS)
-- **Design System SCSS** alineado a Gobernanza §4.7 (dark mode, tokens del mockup)
-- **3 componentes principales**: `RuleList`, `RuleForm`, `RuleDynamicFields`
-- **Página contenedora**: `RulesPage` que orquesta estado A (sin reglas) y B (con reglas)
-- **Layout global** con header, sidebar y breadcrumbs
-- **Capa de servicios** con axios centralizado y React Query
-- **Validaciones cliente** con react-hook-form + Zod
-- **Mocks de API** para desarrollo independiente del backend
+2. **`RuleList.tsx` (Lista de Reglas)**
+   - **CA-09:** Actualizaré `handleStartProcess` para redirigir/mockear hacia la vista de ingesta pasando el `rule.id` por query params, utilizando `window.location.href = "/ingesta?rule_id={id}"` provisionalmente.
+   - **CA-11:** Añadiré el botón de acción "📋 Duplicar" e integraré una mutación de React Query (`useMutation`) que llamará al nuevo servicio, invalidando `['rules']` al tener éxito.
 
----
+3. **`ruleService.ts` (Servicios)**
+   - **CA-11:** Expondré un nuevo método asíncrono `duplicateRule(ruleId)` que apunte al endpoint `POST /api/v1/rules/{id}/duplicate`.
 
-## 2. Archivos que se Planean Crear/Modificar
+## Solicitud
 
-### Scaffolding (via Vite)
-| Acción | Ruta Absoluta |
-|--------|--------------|
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\package.json` |
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\vite.config.ts` |
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\tsconfig.json` |
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\src\main.tsx` |
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\src\App.tsx` |
+Solicito revisión y aprobación formal para cambiar a modo EXECUTION y aplicar los cambios.
 
-### Design System SCSS
-| Acción | Ruta Absoluta |
-|--------|--------------|
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\src\styles\main.scss` |
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\src\styles\abstracts\_variables.scss` |
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\src\styles\abstracts\_mixins.scss` |
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\src\styles\abstracts\_functions.scss` |
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\src\styles\base\_base.scss` |
-
-### Tipos TypeScript
-| Acción | Ruta Absoluta |
-|--------|--------------|
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\src\types\rule.types.ts` |
-
-### Servicios API
-| Acción | Ruta Absoluta |
-|--------|--------------|
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\src\services\api.ts` |
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\src\services\ruleService.ts` |
-
-### Componentes UI
-| Acción | Ruta Absoluta |
-|--------|--------------|
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\src\pages\RulesPage.tsx` |
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\src\components\Rules\RuleList.tsx` |
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\src\components\Rules\RuleList.module.scss` |
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\src\components\Rules\RuleForm.tsx` |
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\src\components\Rules\RuleForm.module.scss` |
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\src\components\Rules\RuleDynamicFields.tsx` |
-| NEW | `C:\zData\ExtracionDatosIA\FrontEnd\src\components\common\Layout.tsx` |
-
-### Archivos que NO se modificarán
-- ❌ Ningún archivo en `BackEnd/`
-- ❌ Ningún mockup en `HU-Mockups/`
-
----
-
-## 3. Decisiones Técnicas Clave
-
-| # | Decisión | Justificación |
-|---|----------|---------------|
-| 1 | **React Hook Form + Zod** para formularios | Gobernanza recomienda validación en cliente (Zod/Yup). RHF es óptimo para formularios complejos con FieldArrays dinámicos (CA-06). |
-| 2 | **React Query (@tanstack/react-query)** para estado servidor | Handoff exige React Query para invalidación y refetch. Mitiga R-04 (sincronización de estado). |
-| 3 | **SCSS Modules** para estilos | Gobernanza §4.7 obliga co-localización de estilos. CSS Modules garantiza aislamiento. |
-| 4 | **Convención BEM con prefijo `grm-`** | Gobernanza §4.7 define convención de nombres CSS para prevenir colisiones. |
-| 5 | **Mocks de API en capa de servicio** | Backend puede ejecutarse en paralelo. Los mocks se reemplazarán por llamadas reales cuando el backend esté listo. |
-| 6 | **Dark mode por defecto** | Mockup HU-01 define tema oscuro profesional como principal (#0d1117 fondo). |
-| 7 | **Zustand** para estado global mínimo (cliente activo) | Gobernanza §4.2 prescribe Zustand para estado global. |
-| 8 | **No Tailwind CSS** | Gobernanza §4.7 prohíbe explícitamente Tailwind, styled-components, emotion, CSS-in-JS. |
-
----
-
-## 4. Preguntas para el Arquitecto
-
-1. **¿Existe una lista predefinida de tipos de documento** (Pagaré, Endoso, Cédula, etc.) o debe ser texto libre? El mockup sugiere un dropdown con opciones fijas.
-
-2. **¿El `cliente_id` activo se obtiene del JWT/token decodificado o de un selector en la UI?** El mockup muestra "Cliente Activo: BANCORP" en el header con un botón "Cambiar Cliente". ¿Debo implementar la selección de cliente o asumir que viene del contexto de autenticación?
-
-3. **¿Los endpoints del backend ya están disponibles para pruebas?** Si no, usaré mocks con datos realistas hasta que estén listos.
-
----
-
-## 5. Riesgos Identificados
-
-| ID | Riesgo | Mitigación | Probabilidad |
-|----|--------|-----------|-------------|
-| R-04 | Pérdida de sincronización entre listado y ediciones | React Query con invalidación automática al mutar | Media |
-| R-FE-01 | FrontEnd vacío — requiere scaffolding completo | Usar template oficial de Vite (confiable) | Baja |
-| R-FE-02 | Backend no disponible aún | Implementar mocks en ruleService con switchable flag | Media |
-| R-FE-03 | Compilación SCSS puede fallar si tokens mal definidos | Verificar compilación SCSS como paso de validación | Baja |
-
----
-
-## 6. Dependencias
-
-- [x] Handoff leído y analizado completamente
-- [x] Mockup narrativo (MOCKUP-HU-01-Reglas-Trabajo.md) analizado
-- [x] Gobernanza Arquitectónica (v1.1.0) analizada
-- [ ] Schemas Pydantic del backend (en investigación — se alinearán los types/)
-- [x] Rama git correcta: `HU1_CA1-CA6_DEVDAVID_ITEREACION1`
-
----
-
-*Generado por: Agente Frontend*  
-*Fecha: 2026-05-23*  
-*Esperando revisión del Arquitecto Líder*
+**Responde "Aprobado" para iniciar.**
