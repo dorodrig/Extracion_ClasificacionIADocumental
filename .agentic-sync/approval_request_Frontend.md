@@ -1,23 +1,28 @@
-# Solicitud de Revisión — Frontend HU-02 (CA-01 al CA-04)
+# Solicitud de Aprobación - Frontend (HU-02, CA-05 y CA-08)
 
-**De:** Agente Frontend
-**Para:** Arquitecto Líder
+**Resumen del plan propuesto:**
+Se implementará el componente `OmittedFilesAlert` para notificar al usuario sobre extensiones inválidas filtradas localmente y desde el backend. Se creará `IngestionProgress` para gestionar el polling de estado durante el proceso de preparación del batch y mostrar feedback en la UI. Adicionalmente, se migrarán todos los inline styles de los componentes correspondientes a sus archivos SCSS para saldar la deuda técnica de la iteración 1.
 
-## Resumen del Plan Propuesto
-Implementación de la interfaz de Ingesta Dual (Escáner/Carpeta) mediante React 18, TypeScript, SASS y Zustand. Se crearán los módulos `IntakeDashboard`, `ScannerModule` y `FolderModule` que reflejarán fielmente el MOCKUP-HU-02-Ingesta-Documentos.md.
+**Archivos a crear/modificar:**
+- [NUEVO] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\intake\OmittedFilesAlert.tsx`
+- [NUEVO] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\intake\OmittedFilesAlert.module.scss`
+- [NUEVO] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\intake\IngestionProgress.tsx`
+- [NUEVO] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\intake\IngestionProgress.module.scss`
+- [MODIFICAR] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\intake\DocumentList.tsx`
+- [MODIFICAR] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\intake\IntakeDashboard.tsx`
+- [MODIFICAR] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\intake\ScannerModule.tsx`
+- [MODIFICAR] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\intake\FolderModule.tsx`
+- [MODIFICAR] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\services\batchService.ts`
+- [MODIFICAR] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\store\batchStore.ts`
 
-## Decisiones Técnicas Clave
-1. **Mock de Escáner TWAIN:** Puesto que los navegadores no tienen acceso nativo directo a escáneres por motivos de seguridad sin uso de plugins (ej. Dynamsoft Web TWAIN), se simulará la experiencia de escaneo (estado de conexión, simulación de captura de páginas y generación de archivos mock) para cumplir la validación visual y funcional del CA-02 y CA-03.
-2. **Selección de Directorio (Carpeta):** Se utilizará el atributo `webkitdirectory` en un input tipo file para el CA-04, que es ampliamente soportado en navegadores basados en Chromium.
+**Decisiones técnicas clave tomadas:**
+- Se utilizará `setInterval` en un `useEffect` dentro de `IngestionProgress` para el polling de estado cada 1.5s, manejando un clean-up correcto en el desmontaje.
+- El estado del polling será guardado en el store global de Zustand (`batchProgress`) para asegurar persistencia visual aunque otros componentes requieran actualizarse.
+- El arreglo de archivos omitidos retornados por el endpoint `/prepare` se renderizará combinándose o complementando el de `FolderModule`.
 
-## Riesgos y Preguntas para el Arquitecto
-1. **[CRÍTICO] Ausencia del Proyecto Base Vite:** La rama actual no contiene la carpeta `FrontEnd`. Aunque el Handoff menciona que la HU-01 (Componentes base) está completada, los archivos no se encuentran en este branch. **¿Debo inicializar el proyecto Vite desde cero con `npm create vite@latest` e instalar zustand/axios/sass, o hay algún error de merge/ramas que deba resolverse primero?**
-2. **Integración Backend:** ¿El endpoint `/api/v1/batches` ya está mockeado en algún servidor o debo manejar de forma silente (catch y mock local) el POST para poder avanzar con la UI?
+**Riesgos identificados:**
+- El intervalo de polling podría no limpiarse si hay desmontajes no controlados del componente, el `useEffect` será estricto al retornarlo.
+- Mockear los endpoints de `prepare` y `status` si el backend aún no está disponible para probar la funcionalidad localmente.
 
-## Archivos Principales a Crear
-- `FrontEnd/src/store/batchStore.ts`
-- `FrontEnd/src/services/batchService.ts`
-- `FrontEnd/src/components/intake/IntakeDashboard.tsx`
-- `FrontEnd/src/components/intake/ScannerModule.tsx`
-- `FrontEnd/src/components/intake/FolderModule.tsx`
-- `FrontEnd/src/components/intake/DocumentList.tsx`
+**Preguntas para el Arquitecto:**
+- Ninguna. Cumple con todos los lineamientos indicados en el handoff.
