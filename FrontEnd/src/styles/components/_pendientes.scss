@@ -1,0 +1,120 @@
+@use '../abstracts/variables' as *;
+
+.pendientes-page {
+  padding: $spacing-4;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: $color-bg-base;
+  color: $color-text-primary;
+}
+
+.pendientes-filters {
+  display: flex;
+  gap: $spacing-3;
+  margin-bottom: $spacing-4;
+  align-items: center;
+  background-color: $color-bg-surface;
+  padding: $spacing-3;
+  border-radius: $border-radius-base;
+
+  input, select {
+    background-color: $color-bg-base;
+    color: $color-text-primary;
+    border: 1px solid $color-border;
+    padding: $spacing-2;
+    border-radius: $border-radius-sm;
+    
+    &:focus {
+      outline: none;
+      border-color: $color-border-focus;
+    }
+  }
+
+  .btn-limpiar {
+    background: transparent;
+    border: none;
+    color: $color-danger;
+    cursor: pointer;
+    font-size: $font-size-lg;
+    
+    &:hover {
+      color: $color-danger-dark;
+    }
+  }
+}
+
+.pendientes-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: $color-bg-surface;
+  border-radius: $border-radius-base;
+  overflow: hidden;
+
+  th, td {
+    padding: $spacing-3;
+    text-align: left;
+    border-bottom: 1px solid $color-border;
+  }
+
+  th {
+    color: $color-text-secondary;
+    font-weight: 600;
+    font-size: $font-size-sm;
+    text-transform: uppercase;
+  }
+
+  tr:hover {
+    background-color: $color-bg-highlight;
+  }
+
+  .tiempo-cola {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    
+    &.urgente { color: $color-danger; }
+    &.advertencia { color: $color-warning; }
+    &.ok { color: $color-success; }
+  }
+
+  .btn-revisar {
+    background-color: $color-primary;
+    color: $color-text-inverse;
+    border: none;
+    padding: $spacing-1 $spacing-3;
+    border-radius: $border-radius-sm;
+    cursor: pointer;
+    transition: $transition-base;
+
+    &:hover {
+      background-color: $color-primary-dark;
+    }
+  }
+
+  .btn-estado {
+    background-color: transparent;
+    color: $color-text-secondary;
+    border: 1px solid $color-border;
+    padding: $spacing-1 $spacing-3;
+    border-radius: $border-radius-sm;
+    cursor: default;
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-8;
+  color: $color-text-secondary;
+  text-align: center;
+
+  svg {
+    width: 64px;
+    height: 64px;
+    color: $color-success;
+    margin-bottom: $spacing-4;
+  }
+}

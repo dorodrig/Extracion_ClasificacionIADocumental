@@ -1,0 +1,344 @@
+@use '../abstracts/variables' as *;
+
+.visor-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: $color-bg-base;
+  color: $color-text-primary;
+}
+
+.visor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-3 $spacing-4;
+  background-color: $color-bg-surface;
+  border-bottom: 1px solid $color-border;
+
+  .volver-link {
+    color: $color-primary;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .doc-title {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+  }
+
+  .nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+
+    button {
+      background: transparent;
+      border: 1px solid $color-border;
+      color: $color-text-primary;
+      padding: $spacing-1 $spacing-2;
+      border-radius: $border-radius-sm;
+      cursor: pointer;
+
+      &:hover:not(:disabled) {
+        background-color: $color-bg-highlight;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+.visor-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+// PANEL IZQUIERDO: Visor PDF (65%)
+.pdf-viewer-panel {
+  width: 65%;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid $color-border;
+  background-color: #0d1117; // Requisito del mockup
+
+  .pdf-toolbar {
+    display: flex;
+    justify-content: space-between;
+    padding: $spacing-2 $spacing-4;
+    background-color: #161b22;
+    border-bottom: 1px solid #21262d;
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: $spacing-3;
+
+      button {
+        background: transparent;
+        border: 1px solid $color-border;
+        color: $color-text-primary;
+        padding: $spacing-1 $spacing-2;
+        border-radius: $border-radius-sm;
+        cursor: pointer;
+
+        &:hover {
+          background-color: $color-bg-highlight;
+        }
+      }
+    }
+  }
+
+  .pdf-container {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    padding: $spacing-5;
+
+    .react-pdf__Page {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); // Sombra suave para destacar
+    }
+  }
+}
+
+// PANEL DERECHO: Datos Extraídos (35%)
+.extracted-data-panel {
+  width: 35%;
+  background-color: #0d1117;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+
+  .panel-header {
+    background-color: #2d2200; // Ámbar muy oscuro
+    border-left: 4px solid $color-warning;
+    padding: $spacing-3 $spacing-4;
+    margin: $spacing-4;
+    border-radius: 0 $border-radius-base $border-radius-base 0;
+
+    .title {
+      color: $color-warning;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: $spacing-2;
+      margin-bottom: $spacing-1;
+    }
+
+    .subtitle {
+      color: $color-text-primary;
+      font-size: $font-size-sm;
+    }
+  }
+
+  .fields-container {
+    padding: 0 $spacing-4;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-4;
+  }
+
+  .field-item {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+
+    .field-label {
+      font-size: 11px;
+      color: $color-text-secondary;
+      text-transform: uppercase;
+      font-weight: 600;
+
+      .required {
+        color: $color-danger;
+        margin-left: $spacing-1;
+        text-transform: none;
+      }
+    }
+
+    input {
+      background-color: transparent;
+      border: 1px solid transparent; // Por defecto modo lectura sin borde
+      color: $color-text-primary;
+      padding: $spacing-2;
+      border-radius: $border-radius-sm;
+      font-size: $font-size-base;
+      transition: $transition-base;
+      width: 100%;
+
+      &.editable {
+        border-color: $color-border;
+        background-color: $color-bg-surface;
+        
+        &:focus {
+          outline: none;
+          border-color: $color-border-focus;
+        }
+      }
+
+      &.error-border {
+        border-color: $color-danger;
+      }
+    }
+
+    .field-status {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      padding-top: $spacing-1;
+      border-top: 1px solid $color-border;
+
+      .status-text {
+        display: flex;
+        align-items: center;
+        gap: $spacing-1;
+
+        &.validado { color: $color-success; }
+        &.error { color: $color-danger; }
+        &.advertencia { color: $color-warning; }
+      }
+
+      .ocr-score {
+        color: $color-text-secondary;
+      }
+    }
+  }
+
+  .actions-container {
+    margin-top: auto;
+    padding: $spacing-4;
+    border-top: 1px solid $color-border;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-4;
+
+    .action-card {
+      border: 1px solid $color-border;
+      border-radius: $border-radius-base;
+      padding: $spacing-3;
+      background-color: $color-bg-surface;
+      transition: $transition-base;
+
+      &.active {
+        border-color: $color-primary;
+      }
+
+      .card-title {
+        font-weight: 600;
+        margin-bottom: $spacing-2;
+        display: flex;
+        align-items: center;
+        gap: $spacing-2;
+      }
+
+      button.btn-primary {
+        background-color: $color-primary;
+        color: $color-text-inverse;
+        border: none;
+        padding: $spacing-2;
+        border-radius: $border-radius-base;
+        width: 100%;
+        cursor: pointer;
+        font-weight: 600;
+        
+        &:hover:not(:disabled) {
+          background-color: $color-primary-dark;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+
+      button.btn-success {
+        background-color: $color-success-dark;
+        color: $color-text-inverse;
+        border: none;
+        padding: $spacing-2;
+        border-radius: $border-radius-base;
+        width: 100%;
+        cursor: pointer;
+        font-weight: 600;
+
+        &:hover:not(:disabled) {
+          background-color: #2ea043;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+
+      textarea {
+        width: 100%;
+        background-color: #0d1117;
+        border: 1px solid #30363d;
+        color: #e6edf3;
+        padding: $spacing-2;
+        border-radius: $border-radius-sm;
+        resize: vertical;
+        min-height: 80px;
+        margin-bottom: $spacing-2;
+
+        &:focus {
+          outline: none;
+          border-color: $color-border-focus;
+        }
+      }
+
+      .char-counter {
+        font-size: 12px;
+        color: $color-text-secondary;
+        text-align: right;
+        margin-bottom: $spacing-2;
+      }
+    }
+
+    .divider {
+      text-align: center;
+      color: $color-text-secondary;
+      position: relative;
+      
+      &::before, &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 40%;
+        height: 1px;
+        background-color: $color-border;
+      }
+      &::before { left: 0; }
+      &::after { right: 0; }
+    }
+
+    .btn-descartar {
+      background: transparent;
+      border: 1px solid $color-danger;
+      color: $color-danger;
+      padding: $spacing-2;
+      border-radius: $border-radius-base;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+
+      &:hover {
+        background-color: rgba(248, 81, 73, 0.1);
+      }
+    }
+  }
+}

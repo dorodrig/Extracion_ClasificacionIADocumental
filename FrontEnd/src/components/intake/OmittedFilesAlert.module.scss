@@ -1,0 +1,41 @@
+@use '../../styles/abstracts/variables' as *;
+@use '../../styles/abstracts/mixins' as *;
+
+.grm-omitted-alert {
+  background-color: rgba($color-warning, 0.1);
+  border: 1px solid rgba($color-warning, 0.3);
+  color: $color-warning;
+  padding: $spacing-3;
+  border-radius: $border-radius-base;
+  font-size: $font-size-sm;
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-2;
+  margin-top: $spacing-3;
+  margin-bottom: $spacing-3;
+
+  &__icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+  }
+
+  &__title {
+    font-weight: 600;
+  }
+
+  &__list {
+    margin: 0;
+    padding-left: $spacing-4;
+    
+    li {
+      margin-bottom: 2px;
+      word-break: break-all;
+    }
+  }
+}

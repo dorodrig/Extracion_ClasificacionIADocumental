@@ -9,6 +9,8 @@
 // LAYOUT
 // -----------------------------------------------------------------------------
 
+@use 'variables' as *;
+
 @mixin flex-center {
   display: flex;
   align-items: center;
@@ -293,4 +295,26 @@
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
+@mixin card-base {
+  background-color: $color-bg-surface;
+  border: 1px solid $color-border;
+  border-radius: $border-radius-base;
+  padding: $spacing-4;
+}
+
+@mixin focus-ring {
+  outline: 2px solid $color-primary;
+  outline-offset: 2px;
+}
+
+@mixin status-badge($bg, $color) {
+  background-color: $bg;
+  color: $color;
+  padding: $spacing-1 $spacing-2;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-1;
 }

@@ -1,0 +1,84 @@
+@use '../../styles/abstracts/variables' as *;
+@use '../../styles/abstracts/mixins' as *;
+
+.grm-document-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+
+  &__table-container {
+    border: 1px solid $color-border;
+    border-radius: $border-radius-base;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+
+    th, td {
+      padding: $spacing-3 $spacing-4;
+      border-bottom: 1px solid $color-border;
+    }
+
+    th {
+      background-color: $color-bg-highlight;
+      color: $color-text-secondary;
+      font-weight: 600;
+      font-size: $font-size-sm;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background-color: rgba($color-bg-highlight, 0.5);
+    }
+  }
+
+  &__footer {
+    @include flex-between;
+    padding: $spacing-3 $spacing-4;
+    background-color: $color-bg-highlight;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    border-top: 1px solid $color-border;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-3;
+    margin-top: $spacing-4;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-1;
+    
+    &.listo { color: $color-success; }
+    &.ilegible { color: $color-danger; }
+  }
+
+  .delete-btn {
+    color: $color-text-secondary;
+    &:hover { color: $color-danger; }
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .btn-confirm {
+    background-color: $color-success;
+    border-color: $color-success;
+    
+    &:hover:not(:disabled) {
+      background-color: darken($color-success, 10%);
+      border-color: darken($color-success, 10%);
+    }
+  }
+}

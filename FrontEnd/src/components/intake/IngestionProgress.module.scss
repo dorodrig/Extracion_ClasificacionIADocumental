@@ -1,0 +1,51 @@
+@use '../../styles/abstracts/variables' as *;
+@use '../../styles/abstracts/mixins' as *;
+
+.grm-ingestion-progress {
+  @include card-base;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-8;
+
+  &__spinner-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: $spacing-4;
+  }
+
+  &__spinner {
+    animation: spin 1s linear infinite;
+    color: $color-primary;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  &__text {
+    font-size: $font-size-lg;
+    color: $color-text-inverse;
+    font-weight: 600;
+  }
+
+  &__bar-container {
+    width: 100%;
+    max-width: 400px;
+    height: 8px;
+    background-color: $color-bg-highlight;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: $spacing-2;
+  }
+
+  &__bar {
+    height: 100%;
+    background-color: $color-primary;
+    transition: width 0.3s ease;
+  }
+}

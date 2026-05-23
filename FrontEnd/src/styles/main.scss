@@ -13,3 +13,8 @@
 
 // Layouts (Header, Sidebar)
 @use 'layouts/layout';
+@use 'abstracts/variables';
+@use 'abstracts/mixins';
+@use 'base/reset';
+@use 'components/pendientes';
+@use 'components/visor';

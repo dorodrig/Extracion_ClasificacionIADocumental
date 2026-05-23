@@ -1,0 +1,85 @@
+@use '../../styles/abstracts/variables' as *;
+@use '../../styles/abstracts/mixins' as *;
+
+.grm-scanner-module {
+  @include card-base;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+
+  &__header {
+    @include flex-between;
+    border-bottom: 1px solid $color-border;
+    padding-bottom: $spacing-3;
+    
+    h3 {
+      font-size: $font-size-lg;
+      color: $color-text-inverse;
+    }
+    
+    .status {
+      display: flex;
+      align-items: center;
+      gap: $spacing-2;
+      
+      &.connected {
+        color: $color-success;
+      }
+    }
+  }
+
+  &__device-list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-2;
+    border: 1px solid $color-border;
+    border-radius: $border-radius-base;
+    padding: $spacing-4;
+    background-color: $color-bg-base;
+    
+    .device-item {
+      @include flex-between;
+      padding: $spacing-2;
+      border-radius: $border-radius-sm;
+      
+      &:hover {
+        background-color: $color-bg-highlight;
+      }
+    }
+  }
+
+  &__capture-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-8;
+    border: 2px dashed $color-border;
+    border-radius: $border-radius-base;
+    background-color: $color-bg-base;
+    text-align: center;
+    gap: $spacing-4;
+    
+    .icon {
+      color: $color-primary;
+    }
+  }
+  
+  &__actions-right {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  &__icon-btn {
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  
+  &__warning {
+    color: $color-warning;
+    font-size: $font-size-sm;
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+  }
+}
