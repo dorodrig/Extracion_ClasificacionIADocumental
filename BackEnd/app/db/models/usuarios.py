@@ -8,15 +8,6 @@ usuario_cliente = Table(
     Column('cliente_id', Integer, ForeignKey('clientes.id', ondelete="CASCADE"), primary_key=True)
 )
 
-class Cliente(Base):
-    __tablename__ = "clientes"
-
-    id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String(255), nullable=False)
-    identificacion = Column(String(50), nullable=True, unique=True)
-    
-    # Relación N:M con usuarios
-    usuarios = relationship("Usuario", secondary=usuario_cliente, back_populates="clientes")
 
 class Usuario(Base):
     __tablename__ = "usuarios"

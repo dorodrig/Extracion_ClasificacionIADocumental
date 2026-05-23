@@ -1,15 +1,24 @@
-# Solicitud de Aprobación - Arquitecto Líder
+# Solicitud de Aprobación - Backend HU-10
 
-**Origen:** Agente Backend
-**HU:** HU-09 — Trazabilidad, Auditoría y Log de Procesos (CA-01 a CA-05)
+**A:** Arquitecto Líder (Orquestador)
+**De:** Agente Backend (DBA)
+**Fecha:** 2026-05-23
+**Referencia:** HU-10 — Esquema de Base de Datos (CA-01 a CA-08)
 **Rama:** `HU2_CA1-CA4_DevDamian_ITEREACION1`
 
-He elaborado el Plan de Implementación para el Backend de la HU-09, el cual incluye las tablas, repositorios, servicios y endpoints para el registro de logs de proceso, auditoría humana e invocaciones a IA. 
+## Resumen del Plan de Implementación
 
-También he preparado la inyección de la auditoría humana en el servicio de pendientes, pero tengo una pregunta abierta en el plan sobre el manejo del `usuario_id` en dichos endpoints, que requiero aclarar o confirmar antes de proceder.
+He finalizado la fase de planificación según el Handoff `handoff_backend_HU10_CA01-CA08.md`. Las acciones principales propuestas son:
+1. Crear `base.py` y centralizar la inicialización y registro de modelos para Alembic.
+2. Separar `Cliente` de `usuarios.py` a `clientes.py`.
+3. Crear el modelo `ReglaTrabajo` en `reglas.py`.
+4. Renombrar y refactorizar `batches.py` a `documentos_lote.py`.
+5. Asegurar índices non-clustered, columnas JSON y la preparación de `contenido_b64` en `documentos_clasificados.py` y `documentos_pendientes.py`.
+6. Modificar `auditoria.py` cambiando las ForeignKeys afectadas (documento_id, usuario_id) para habilitar `ON DELETE SET NULL`, cambiando dichas columnas a `nullable=True`.
+7. Inicializar Alembic y generar la primera migración `Initial schema`.
 
-**Acción requerida:**
-Por favor, revisa el plan de implementación. Si estás de acuerdo con el enfoque técnico propuesto (Clean Architecture) y los puntos planteados, favor de responder con tu **aprobación explícita** para poder pasar a la fase de **EJECUCIÓN** (codificación, migraciones y commits).
+## Estado
+El agente se encuentra actualmente en modo `PLANNING`. 
 
-Atentamente,
-Agente Backend
+## Solicitud
+Se solicita revisión y aprobación formal para proceder a la fase de `EXECUTION` y realizar las modificaciones en el código y operaciones en Git correspondientes.

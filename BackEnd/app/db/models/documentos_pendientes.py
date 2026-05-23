@@ -14,6 +14,9 @@ class DocumentoPendiente(Base):
     campos_extraidos_json = Column(JSON, nullable=True)
     estado = Column(String(50), nullable=False, default="pendiente") # pendiente, corregido, descartado
     
+    # Preparado para futuro CA-05
+    # contenido_b64 = Column(String, doc="Contenido en base64 del documento", nullable=True)
+    
     operario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=True)
     
     created_at = Column(DateTime, default=func.now())
