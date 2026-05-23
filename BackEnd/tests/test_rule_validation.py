@@ -9,10 +9,12 @@ import pytest
 from app.domain.exceptions import (
     DuplicateFieldNameException,
     InvalidModoEntradaException,
+    InvalidPatronCarpetaException,
 )
 from app.domain.rules.rule_validation import (
     validate_campos_extraer_no_duplicados,
     validate_modo_entrada,
+    validate_patron_carpeta,
     validate_rule_data,
 )
 
@@ -121,7 +123,7 @@ class TestValidateRuleData:
             {"nombre": "Campo1", "tipo": "Texto", "obligatorio": True},
             {"nombre": "Campo2", "tipo": "Número", "obligatorio": False},
         ]
-        validate_rule_data(campos, "scanner")  # No debe lanzar
+        validate_rule_data(campos, "scanner", "{Campo1}")  # No debe lanzar
 
     def test_modo_invalido_con_campos_validos(self):
         """Modo inválido lanza excepción aunque los campos sean correctos."""
@@ -129,7 +131,7 @@ class TestValidateRuleData:
             {"nombre": "Campo1", "tipo": "Texto", "obligatorio": True},
         ]
         with pytest.raises(InvalidModoEntradaException):
-            validate_rule_data(campos, "usb")
+            validate_rule_data(campos, "usb", "{Campo1}")
 
     def test_campos_duplicados_con_modo_valido(self):
         """Campos duplicados lanzan excepción aunque el modo sea válido."""
@@ -138,4 +140,39 @@ class TestValidateRuleData:
             {"nombre": "campo1", "tipo": "Número", "obligatorio": False},
         ]
         with pytest.raises(DuplicateFieldNameException):
-            validate_rule_data(campos, "carpeta")
+            validate_rule_data(campos, "carpeta", "{Campo1}")
+
+    def test_patron_invalido(self):
+        """Patrón inválido lanza excepción."""
+        campos = [
+            {"nombre": "Campo1", "tipo": "Texto", "obligatorio": True},
+        ]
+        with pytest.raises(InvalidPatronCarpetaException):
+            validate_rule_data(campos, "carpeta", "{NoExiste}")
+
+
+# ---------------------------------------------------------------------------
+# Tests de validate_patron_carpeta
+# ---------------------------------------------------------------------------
+
+class TestValidatePatronCarpeta:
+    """Tests para la validación del patrón de carpeta."""
+    
+    def test_patron_valido(self):
+        campos = [{"nombre": "Cédula", "tipo": "Texto", "obligatorio": True}]
+        validate_patron_carpeta("{Cédula}/out", campos)
+        
+    def test_patron_sin_variables(self):
+        campos = [{"nombre": "Cédula", "tipo": "Texto", "obligatorio": True}]
+        with pytest.raises(InvalidPatronCarpetaException):
+            validate_patron_carpeta("carpeta_salida", campos)
+            
+    def test_patron_variable_no_coincide(self):
+        campos = [{"nombre": "Cédula", "tipo": "Texto", "obligatorio": True}]
+        with pytest.raises(InvalidPatronCarpetaException):
+            validate_patron_carpeta("{Nombre}/out", campos)
+            
+    def test_patron_case_insensitive(self):
+        campos = [{"nombre": "Cédula", "tipo": "Texto", "obligatorio": True}]
+        validate_patron_carpeta("{cédula}/out", campos)
+

@@ -15,6 +15,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.db.models.rule_db import ReglasTrabajo
+from app.db.models.rule_history_db import ReglasTrabajoHistorial
 
 logger = logging.getLogger("grm.rule_repository")
 
@@ -147,6 +148,41 @@ class RuleRepository:
             logger.error("Error al crear regla: %s", str(e))
             raise
 
+    def save_history_snapshot(self, db_rule: ReglasTrabajo, modified_by: int | None = None) -> None:
+        """
+        Guarda un snapshot del estado actual de la regla en el historial.
+
+        CA-10: Mantiene versiones anteriores de las reglas.
+        
+        Args:
+            db_rule: Instancia de la regla a respaldar.
+            modified_by: ID del usuario que modifica.
+        """
+        snapshot = {
+            "id": db_rule.id,
+            "cliente_id": db_rule.cliente_id,
+            "nombre": db_rule.nombre,
+            "tipo_documento": db_rule.tipo_documento,
+            "campos_extraer": json.loads(db_rule.campos_extraer) if isinstance(db_rule.campos_extraer, str) else db_rule.campos_extraer,
+            "patron_carpeta": db_rule.patron_carpeta,
+            "modo_entrada": db_rule.modo_entrada,
+            "umbral_ocr": db_rule.umbral_ocr,
+            "version": db_rule.version,
+            "activa": db_rule.activa,
+            "created_by": db_rule.created_by,
+            "created_at": db_rule.created_at.isoformat() if db_rule.created_at else None,
+            "updated_at": db_rule.updated_at.isoformat() if db_rule.updated_at else None,
+        }
+
+        historial = ReglasTrabajoHistorial(
+            regla_id=db_rule.id,
+            version=db_rule.version,
+            snapshot_json=json.dumps(snapshot, ensure_ascii=False),
+            modificado_por=modified_by,
+        )
+        self.db.add(historial)
+        self.db.flush()
+
     def update(self, rule_id: int, rule_data: dict) -> ReglasTrabajo | None:
         """
         Actualiza una regla de trabajo existente.
@@ -177,6 +213,9 @@ class RuleRepository:
             )
 
         try:
+            # Guardar historial ANTES de aplicar los cambios (CA-10)
+            self.save_history_snapshot(db_rule)
+
             for key, value in data.items():
                 setattr(db_rule, key, value)
 
@@ -196,3 +235,39 @@ class RuleRepository:
             self.db.rollback()
             logger.error("Error al actualizar regla id=%d: %s", rule_id, str(e))
             raise
+
+    def duplicate(self, rule_id: int, new_name: str) -> ReglasTrabajo | None:
+        """
+        Duplica una regla existente con un nuevo nombre.
+
+        CA-11: Clona la regla reiniciando versión y timestamps.
+
+        Args:
+            rule_id: ID de la regla a duplicar.
+            new_name: Nuevo nombre asignado.
+
+        Returns:
+            La nueva regla creada o None si no existe la original.
+        """
+        db_rule = self.get_by_id(rule_id)
+        if db_rule is None:
+            return None
+
+        campos_str = db_rule.campos_extraer
+        campos = json.loads(campos_str) if isinstance(campos_str, str) else campos_str
+        
+        # Copia profunda forzada
+        campos_clonados = json.loads(json.dumps(campos))
+
+        rule_data = {
+            "cliente_id": db_rule.cliente_id,
+            "nombre": new_name,
+            "tipo_documento": db_rule.tipo_documento,
+            "campos_extraer": campos_clonados,
+            "patron_carpeta": db_rule.patron_carpeta,
+            "modo_entrada": db_rule.modo_entrada,
+            "umbral_ocr": db_rule.umbral_ocr,
+        }
+
+        # self.create() maneja el commit y transacciones
+        return self.create(rule_data)

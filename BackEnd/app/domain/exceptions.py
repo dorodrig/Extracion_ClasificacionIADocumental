@@ -56,3 +56,15 @@ class RuleNameAlreadyExistsException(GRMException):
             f"Ya existe una regla con el nombre '{nombre}' "
             f"para el cliente con id={cliente_id}."
         )
+
+
+class InvalidPatronCarpetaException(GRMException):
+    """El patrón de carpeta no contiene variables válidas de los campos a extraer."""
+
+    def __init__(self, patron: str):
+        self.patron = patron
+        super().__init__(
+            f"El patrón de carpeta '{patron}' es inválido. "
+            f"Debe contener al menos una variable {{campo}} que corresponda a "
+            f"un campo definido en campos_extraer."
+        )

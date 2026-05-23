@@ -5,10 +5,12 @@ Gobernanza §2.2 — app/domain/rules/
 Estas validaciones son independientes de la infraestructura.
 """
 import logging
+import re
 
 from app.domain.exceptions import (
     DuplicateFieldNameException,
     InvalidModoEntradaException,
+    InvalidPatronCarpetaException,
 )
 
 logger = logging.getLogger("grm.rule_validation")
@@ -59,7 +61,42 @@ def validate_modo_entrada(modo: str) -> None:
         raise InvalidModoEntradaException(modo)
 
 
-def validate_rule_data(campos_extraer: list[dict], modo_entrada: str) -> None:
+def validate_patron_carpeta(patron: str, campos: list[dict]) -> None:
+    """
+    Valida que el patrón de carpeta contenga al menos una variable válida.
+
+    CA-07: El patrón debe tener variables en formato {nombre_campo} que
+    coincidan (case-insensitive) con algún campo en campos_extraer.
+
+    Args:
+        patron: El patrón de la carpeta (ej. '{Cliente}/{Cédula}').
+        campos: Lista de campos a extraer.
+
+    Raises:
+        InvalidPatronCarpetaException: Si no hay variables válidas.
+    """
+    variables = re.findall(r"\{([\w\s]+)\}", patron)
+    if not variables:
+        # El requerimiento dice que debe contener al menos una variable que corresponda,
+        # pero si no tiene ninguna variable también es inválido según CA-07.
+        logger.warning("Patrón de carpeta sin variables detectadas: '%s'", patron)
+        raise InvalidPatronCarpetaException(patron)
+
+    nombres_campos = {c["nombre"].strip().lower() for c in campos}
+    
+    # Validar que al menos una variable exista en campos
+    variable_valida_encontrada = False
+    for var in variables:
+        if var.strip().lower() in nombres_campos:
+            variable_valida_encontrada = True
+            break
+            
+    if not variable_valida_encontrada:
+        logger.warning("Patrón de carpeta sin variables válidas: '%s'", patron)
+        raise InvalidPatronCarpetaException(patron)
+
+
+def validate_rule_data(campos_extraer: list[dict], modo_entrada: str, patron_carpeta: str) -> None:
     """
     Ejecuta todas las validaciones de negocio para una regla de trabajo.
 
@@ -69,10 +106,13 @@ def validate_rule_data(campos_extraer: list[dict], modo_entrada: str) -> None:
     Args:
         campos_extraer: Lista de campos a extraer (como diccionarios).
         modo_entrada: Modo de entrada de la regla.
+        patron_carpeta: Patrón para organizar carpetas de salida.
 
     Raises:
         DuplicateFieldNameException: Si hay campos duplicados.
         InvalidModoEntradaException: Si el modo de entrada no es válido.
+        InvalidPatronCarpetaException: Si el patrón de carpeta no es válido.
     """
     validate_modo_entrada(modo_entrada)
     validate_campos_extraer_no_duplicados(campos_extraer)
+    validate_patron_carpeta(patron_carpeta, campos_extraer)

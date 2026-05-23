@@ -173,7 +173,7 @@ class RuleService:
 
         # 1. Validaciones de dominio
         campos_dicts = [c.model_dump() for c in data.campos_extraer]
-        validate_rule_data(campos_dicts, data.modo_entrada)
+        validate_rule_data(campos_dicts, data.modo_entrada, data.patron_carpeta)
 
         # 2. Verificar unicidad de nombre por cliente
         if self.repository.exists_by_name_and_client(
@@ -229,7 +229,7 @@ class RuleService:
 
         # 2. Validaciones de dominio
         campos_dicts = [c.model_dump() for c in data.campos_extraer]
-        validate_rule_data(campos_dicts, data.modo_entrada)
+        validate_rule_data(campos_dicts, data.modo_entrada, data.patron_carpeta)
 
         # 3. Verificar unicidad de nombre (excluyendo la regla actual)
         if self.repository.exists_by_name_and_client(
@@ -247,3 +247,40 @@ class RuleService:
         }
         updated_rule = self.repository.update(rule_id, update_data)
         return self._to_response(updated_rule)
+
+    def duplicate_rule(self, rule_id: int) -> RuleResponse:
+        """
+        Duplica una regla existente.
+
+        CA-11: Se añade sufijo " (Copia)", " (Copia 2)", etc.
+
+        Args:
+            rule_id: ID de la regla a duplicar.
+
+        Returns:
+            RuleResponse de la regla duplicada.
+
+        Raises:
+            RuleNotFoundException: Si la regla original no existe.
+        """
+        logger.info("Duplicando regla id=%d", rule_id)
+        
+        db_rule = self.repository.get_by_id(rule_id)
+        if db_rule is None:
+            raise RuleNotFoundException(rule_id)
+
+        base_name = db_rule.nombre
+        cliente_id = db_rule.cliente_id
+        
+        # Generar nombre único
+        new_name = f"{base_name} (Copia)"
+        counter = 2
+        while self.repository.exists_by_name_and_client(new_name, cliente_id):
+            new_name = f"{base_name} (Copia {counter})"
+            counter += 1
+
+        db_new_rule = self.repository.duplicate(rule_id, new_name)
+        if db_new_rule is None:
+            raise RuleNotFoundException(rule_id)
+            
+        return self._to_response(db_new_rule)

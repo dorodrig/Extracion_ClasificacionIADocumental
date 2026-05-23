@@ -72,7 +72,7 @@ VALID_RULE_DATA = {
         {"nombre": "Número de Cédula", "tipo": "Identificación", "obligatorio": True},
         {"nombre": "Nombre Completo", "tipo": "Texto", "obligatorio": True},
     ],
-    "patron_carpeta": "{cliente}/{tipo_doc}/{año}",
+    "patron_carpeta": "{Número de Cédula}/{Nombre Completo}",
     "modo_entrada": "scanner",
 }
 
@@ -339,6 +339,7 @@ class TestCA06CamposDinamicos:
                 {"nombre": "Campo 3", "tipo": "Fecha", "obligatorio": False},
                 {"nombre": "Campo 4", "tipo": "Identificación", "obligatorio": True},
             ],
+            "patron_carpeta": "{Campo 1}",
         }
         response = client.post("/api/v1/rules", json=data)
         assert response.status_code == 201
@@ -364,7 +365,7 @@ class TestUpdateRegla:
             "campos_extraer": [
                 {"nombre": "Número Pasaporte", "tipo": "Identificación", "obligatorio": True},
             ],
-            "patron_carpeta": "{cliente}/{tipo_doc}/{año}/{mes}",
+            "patron_carpeta": "{Número Pasaporte}/{mes}",
             "modo_entrada": "carpeta",
         }
 
@@ -385,7 +386,7 @@ class TestUpdateRegla:
             "campos_extraer": [
                 {"nombre": "Campo", "tipo": "Texto", "obligatorio": True},
             ],
-            "patron_carpeta": "no/importa",
+            "patron_carpeta": "{Campo}/importa",
             "modo_entrada": "scanner",
         }
         response = client.put("/api/v1/rules/99999", json=update_data)
@@ -403,11 +404,112 @@ class TestUpdateRegla:
                 {"nombre": "Campo", "tipo": "Texto", "obligatorio": True},
                 {"nombre": "campo", "tipo": "Número", "obligatorio": False},
             ],
-            "patron_carpeta": "x",
+            "patron_carpeta": "{Campo}",
             "modo_entrada": "scanner",
         }
         response = client.put(f"/api/v1/rules/{rule_id}", json=update_data)
         assert response.status_code == 400
+
+
+# ---------------------------------------------------------------------------
+# CA-07 — Validación de patrón de carpeta
+# ---------------------------------------------------------------------------
+
+class TestCA07ValidacionPatronCarpeta:
+    """CA-07: Validación del patrón de carpeta."""
+    
+    def test_patron_sin_variables_retorna_400(self):
+        """POST /rules con patrón sin variables retorna 400."""
+        data = {**VALID_RULE_DATA, "patron_carpeta": "salida"}
+        response = client.post("/api/v1/rules", json=data)
+        assert response.status_code == 400
+        assert "patrón de carpeta" in response.json()["error"].lower()
+
+    def test_patron_con_variable_invalida_retorna_400(self):
+        """POST /rules con variable no definida en campos retorna 400."""
+        data = {**VALID_RULE_DATA, "patron_carpeta": "{CampoFalso}"}
+        response = client.post("/api/v1/rules", json=data)
+        assert response.status_code == 400
+
+
+# ---------------------------------------------------------------------------
+# CA-11 — Duplicar regla
+# ---------------------------------------------------------------------------
+
+class TestCA11DuplicarRegla:
+    """CA-11: Duplicar regla existente."""
+    
+    def test_duplicar_regla_exitosamente(self):
+        """POST /rules/{id}/duplicate crea copia con sufijo."""
+        created = create_test_rule({
+            "cliente_id": 88,
+            "nombre": "Regla Base",
+            "tipo_documento": "doc",
+            "campos_extraer": [{"nombre": "C", "tipo": "Texto", "obligatorio": True}],
+            "patron_carpeta": "{C}",
+            "modo_entrada": "scanner"
+        })
+        rule_id = created["data"]["id"]
+        
+        response = client.post(f"/api/v1/rules/{rule_id}/duplicate")
+        assert response.status_code == 201
+        
+        body = response.json()
+        assert body["data"]["nombre"] == "Regla Base (Copia)"
+        assert body["data"]["version"] == 1
+        assert len(body["data"]["campos_extraer"]) == 1
+        
+    def test_duplicar_multiples_veces(self):
+        """Múltiples duplicaciones incrementan el sufijo."""
+        created = create_test_rule({
+            "cliente_id": 99, 
+            "nombre": "MultiDupla", 
+            "tipo_documento": "doc", 
+            "campos_extraer": [{"nombre": "C", "tipo": "Texto", "obligatorio": True}], 
+            "patron_carpeta": "{C}", 
+            "modo_entrada": "scanner"
+        })
+        rule_id = created["data"]["id"]
+        
+        r1 = client.post(f"/api/v1/rules/{rule_id}/duplicate")
+        assert r1.json()["data"]["nombre"] == "MultiDupla (Copia)"
+        
+        r2 = client.post(f"/api/v1/rules/{rule_id}/duplicate")
+        assert r2.json()["data"]["nombre"] == "MultiDupla (Copia 2)"
+
+    def test_duplicar_inexistente_retorna_404(self):
+        """POST /rules/99999/duplicate retorna 404."""
+        response = client.post("/api/v1/rules/99999/duplicate")
+        assert response.status_code == 404
+
+
+# ---------------------------------------------------------------------------
+# CA-12 — Nombre único retorna 409 Conflict
+# ---------------------------------------------------------------------------
+
+class TestCA12NombreUnico:
+    """CA-12: Validación de nombre único."""
+    
+    def test_crear_nombre_duplicado_retorna_409(self):
+        """Crear regla con nombre que ya existe retorna 409 Conflict."""
+        create_test_rule({
+            "cliente_id": 100, 
+            "nombre": "Regla Unica", 
+            "tipo_documento": "doc", 
+            "campos_extraer": [{"nombre": "C", "tipo": "Texto", "obligatorio": True}], 
+            "patron_carpeta": "{C}", 
+            "modo_entrada": "scanner"
+        })
+        response = client.post("/api/v1/rules", json={
+            "cliente_id": 100, 
+            "nombre": "Regla Unica", 
+            "tipo_documento": "doc", 
+            "campos_extraer": [{"nombre": "C", "tipo": "Texto", "obligatorio": True}], 
+            "patron_carpeta": "{C}", 
+            "modo_entrada": "scanner"
+        })
+        assert response.status_code == 409
+        assert "Ya existe una regla con el nombre" in response.json()["error"]
 
 
 # ---------------------------------------------------------------------------

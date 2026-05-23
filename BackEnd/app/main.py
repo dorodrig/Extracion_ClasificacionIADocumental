@@ -18,7 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.api.v1.router import api_v1_router
-from app.domain.exceptions import GRMException, RuleNotFoundException
+from app.domain.exceptions import GRMException, RuleNotFoundException, RuleNameAlreadyExistsException
 from app.schemas.rule_schema import APIResponse
 
 # Configurar logging del proyecto GRM
@@ -73,6 +73,22 @@ async def rule_not_found_handler(
             success=False,
             error=str(exc),
             message="Recurso no encontrado",
+        ).model_dump(),
+    )
+
+
+@app.exception_handler(RuleNameAlreadyExistsException)
+async def rule_name_already_exists_handler(
+    request: Request, exc: RuleNameAlreadyExistsException
+) -> JSONResponse:
+    """Handler específico para nombre de regla duplicado → 409 (CA-12)."""
+    logger.warning("Nombre de regla duplicado: %s", str(exc))
+    return JSONResponse(
+        status_code=status.HTTP_409_CONFLICT,
+        content=APIResponse(
+            success=False,
+            error=str(exc),
+            message="Conflicto en nombre de regla",
         ).model_dump(),
     )
 

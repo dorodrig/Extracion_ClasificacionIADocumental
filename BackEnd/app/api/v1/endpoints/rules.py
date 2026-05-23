@@ -186,3 +186,36 @@ def update_rule(
         data=rule,
         message="Regla actualizada exitosamente.",
     )
+
+
+@router.post(
+    "/{rule_id}/duplicate",
+    response_model=APIResponse[RuleResponse],
+    status_code=status.HTTP_201_CREATED,
+    summary="Duplicar regla de trabajo",
+    description="CA-11: Duplica una regla existente con todos sus campos, asignando un nuevo nombre y reiniciando su versión.",
+)
+def duplicate_rule(
+    rule_id: int,
+    db: Session = Depends(get_db),
+    current_user: MockUser = Depends(require_role(["admin", "operario"])),
+) -> APIResponse[RuleResponse]:
+    """
+    Duplica una regla de trabajo existente.
+    
+    - **CA-11**: Clona la regla con todos sus campos a extraer y le asigna un
+      nuevo nombre con el sufijo " (Copia)".
+    """
+    logger.info(
+        "POST /rules/%d/duplicate — usuario=%s",
+        rule_id,
+        current_user.nombre,
+    )
+    service = RuleService(db)
+    rule = service.duplicate_rule(rule_id)
+    return APIResponse(
+        success=True,
+        data=rule,
+        message="Regla duplicada exitosamente.",
+    )
+
