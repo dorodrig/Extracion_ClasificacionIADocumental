@@ -1,47 +1,73 @@
-# Solicitud de Revisión: Frontend
+# Solicitud de Revisión — Agente Frontend — HU-07
 
-Hola Arquitecto Líder,
+| Campo | Valor |
+|---|---|
+| **Agente** | Frontend Developer |
+| **HU** | HU-07 — Portal Web de Consulta para Cliente Final |
+| **CAs** | CA-01 al CA-12 |
+| **Rama** | `HU1_CA1-CA6_DEVDAVID_ITEREACION1` |
+| **Fecha** | 2026-05-23 |
+| **Estado** | PLANNING — Pendiente aprobación del Arquitecto Líder |
 
-He completado el análisis y elaborado el plan de implementación para el **CA-10 (Indicador de progreso de OCR)** de la **HU-03**.
+---
 
-El plan incluye:
-- Componente `OcrProgressIndicator` con SCSS Modules (modo oscuro).
-- Hook `useOcrProgress` usando React Query con `refetchInterval: 3000` para polling mientras el estado sea "en proceso".
-- Servicio para conectar con el endpoint `GET /api/v1/ocr/progress/{batch_id}`.
+## Resumen del Plan
 
-Por favor, revisa el plan de implementación y confirma si puedo proceder con la fase de ejecución.
+Se propone implementar el **Portal Web de Consulta para Cliente Final** con las siguientes características principales:
 
-Quedo a la espera de tu aprobación.
+### Arquitectura
+- **Layout Separado**: Se crea un `PortalLayout` light theme completamente independiente del Layout operario (dark theme) existente.
+- **Rutas**: Todas bajo `/cliente/*` — Login, Dashboard, Documentos, Explorador, Visor, Acceso Denegado.
+- **Estado**: Zustand (`clientStore`) para sesión; React Query para data fetching de `/api/v1/cliente/*`.
+- **Backend**: Se consumirán los 6 endpoints existentes en `BackEnd/app/api/v1/endpoints/cliente.py`.
 
-Saludos,
-Agente Frontend
-# Solicitud de Revisión — Frontend HU-06
+### Archivos Nuevos (27 archivos)
+- **8 archivos SCSS** (light theme tokens, layout portal, dashboard, explorador, documentos, visor, login, errores)
+- **1 archivo de tipos** (`types/cliente.ts`)
+- **1 servicio** (`services/clienteService.ts`)
+- **5 hooks** (dashboard, documentos, carpetas, detalle, session timeout)
+- **8 componentes portal** (Layout, Dashboard, Explorer, FolderTree, DocumentList, Viewer, Login, AccessDenied)
+- **1 página** (`ClientePortalPage.tsx`)
 
-## Resumen del plan propuesto
-Implementación de la HU-06 (Validación Humana: Pendientes y Visor). Se construirán dos vistas principales integradas en `PendientesPage.tsx`:
-1. **Lista de Documentos Pendientes**: Incluye filtros de búsqueda y la tabla con tiempos de espera semaforizados (verde, ámbar, rojo).
-2. **Visor de Documentos (Split Screen 65/35)**: Integración de `react-pdf` en el panel izquierdo (dark mode #0d1117) y un panel derecho reactivo para validación, edición y envío de instrucciones al agente de IA.
+### Archivos Modificados (3 archivos)
+- `main.scss` — agregar @use de los nuevos SCSS
+- `clientStore.ts` — agregar estado de sesión portal
+- `App.tsx` — agregar rutas `/cliente/*`
 
-## Archivos a crear/modificar
-- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\pages\PendientesPage.tsx`
-- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\pending\PendingDocumentList.tsx`
-- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\pending\PendingFilters.tsx`
-- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\pending\DocumentViewer.tsx`
-- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\pending\ExtractedDataPanel.tsx`
-- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\pdf-viewer\PDFViewer.tsx`
-- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\services\pendientesService.ts`
-- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\store\pendientesStore.ts`
-- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\styles\components\_pendientes.scss`
-- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\styles\components\_visor.scss`
+### Cobertura de CAs
+| CA | Implementación |
+|---|---|
+| CA-01 | Login mock con redirección a Dashboard |
+| CA-02 | Dashboard con 4 tarjetas de métricas + tabla últimos docs |
+| CA-03 | Explorador con árbol colapsable (35%) + contenido (65%) |
+| CA-04 | Tabla paginada con filtros (tipo, fecha, búsqueda) |
+| CA-05/06 | Visor readonly PDF/IMG + panel metadatos + zoom/paginación |
+| CA-07 | Botón "Descargar" en visor con Content-Disposition |
+| CA-08 | Pantalla 403 "Acceso Denegado" + interceptor Axios |
+| CA-09 | Banner azul "Documentos en proceso" en Dashboard |
+| CA-10 | Timer inactividad 30 min → redirigir a Login |
+| CA-11 | Responsive Desktop + Tablet (mixins respond-to) |
+| CA-12 | Mini-árbol visual de ubicación en panel lateral del visor |
 
-## Decisiones técnicas clave tomadas
-- Se utilizará `Zustand` para el manejo del estado (ej. documento activo, lista de pendientes) para evitar prop drilling entre el visor y la lista.
-- Se implementará el visor a pantalla completa (full-page) tal como indica el mockup narrativo, gestionando la visibilidad condicional dentro de `PendientesPage.tsx`.
-- Se respetará estrictamente el uso de tokens semánticos definidos en `_variables.scss` (`$color-error`, `$color-warning`, `$color-success`) para la semaforización.
+### Alineación con Gobernanza
+- ✅ SCSS/BEM con prefijo `grm-` — nunca CSS inline
+- ✅ Variables SCSS para todos los valores de diseño
+- ✅ `@use` / `@forward` (no `@import`)
+- ✅ TypeScript estricto — todas las props tipadas
+- ✅ React Query para data fetching, Zustand para estado global
+- ✅ Axios centralizado con interceptors
+- ✅ PascalCase componentes, camelCase hooks/services
 
-## Riesgos identificados
-- Rendimiento en el renderizado del visor PDF si los archivos son muy pesados; mitigaremos limitando el renderizado solo a la página activa usando paginación en `react-pdf`.
-- Manejo de WebSockets para notificaciones (requiere coordinación con backend si no están disponibles aún).
+### Plan completo
+Ver: `implementation_plan.md` en el directorio de artefactos del agente.
 
-## Preguntas para el Arquitecto
-Ninguna. Todo claro en los lineamientos y mockups.
+---
+
+## Preguntas / Confirmaciones
+
+1. **Login Mock**: HU-08 (Auth) no está implementada. Se creará un login mock que simule autenticación y setee `isAuthenticated=true` en Zustand. ¿Es aceptable?
+2. **Descargas**: Se usará el endpoint `/api/v1/cliente/documentos/{id}/descargar` directamente con un `<a href>` target. ¿Se requiere algo adicional para el sección "Descargas" del menú lateral?
+
+---
+
+**Estado: Esperando aprobación del Arquitecto Líder para proceder a EXECUTION.**

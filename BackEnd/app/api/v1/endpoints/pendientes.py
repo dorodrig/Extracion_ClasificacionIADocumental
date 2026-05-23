@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, WebSocket, WebSocketDisconnect, Query
 from sqlalchemy.orm import Session
 from typing import Optional
-from app.db.database import get_db
-from app.core.dependencies import require_role
+from app.core.dependencies import require_role, get_db
 from app.schemas.common import APIResponse
 from app.schemas.pendientes import (
     ListaPendientesResponse,

@@ -3,109 +3,23 @@ Motor de base de datos y fábrica de sesiones SQLAlchemy.
 
 Gobernanza §2.2 — app/db/database.py
 Conexión a SQL Server 2019+ vía pyodbc.
-
-La creación del engine se realiza de forma lazy para permitir que los tests
-inyecten una BD SQLite en memoria sin necesidad de pyodbc instalado.
 """
 import logging
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 logger = logging.getLogger("grm.database")
 
+Base = declarative_base()
 
-class Base(DeclarativeBase):
-    """Clase base declarativa para todos los modelos SQLAlchemy del proyecto GRM."""
-    pass
-
-
-def get_engine(database_url: str | None = None):
-    """
-    Crea el engine SQLAlchemy para la BD configurada.
-
-    Args:
-        database_url: URL de conexión. Si no se proporciona, usa settings.
-
-    Returns:
-        Engine de SQLAlchemy configurado.
-    """
-    if database_url is None:
-        from app.core.config import settings
-        database_url = settings.database_url
-
-    return create_engine(
-        database_url,
-        pool_pre_ping=True,
-        echo=False,
-    )
-
-
-def get_session_local(engine=None):
-    """
-    Crea la fábrica de sesiones para el engine dado.
-
-    Args:
-        engine: Engine de SQLAlchemy. Si no se proporciona, crea uno por defecto.
-
-    Returns:
-        sessionmaker configurado.
-    """
-    if engine is None:
-        engine = get_engine()
-    return sessionmaker(
-        autocommit=False,
-        autoflush=False,
-        bind=engine,
-    )
-
-
-# Lazy initialization — solo se crean al importar por primera vez desde código real
-# Los tests override con su propia BD (SQLite en memoria).
-_engine = None
-_SessionLocal = None
-
-
-def _init_default():
-    """Inicializa engine y SessionLocal con la configuración por defecto."""
-    global _engine, _SessionLocal
-    if _engine is None:
-        _engine = get_engine()
-        _SessionLocal = get_session_local(_engine)
-
-
-@property
-def engine():
-    _init_default()
-    return _engine
-
-
-def SessionLocal():
-    """Retorna una nueva sesión de BD usando el engine por defecto."""
-    _init_default()
-    return _SessionLocal()
-app/db/database.py
-Engine SQLAlchemy, SessionLocal y Base declarativa.
-Configuración externalizada via pydantic-settings (.env).
-"""
-import logging
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-
-logger = logging.getLogger("grm.database")
-
-# Importación diferida de settings para evitar arrancar pydantic-settings
-# antes de que .env esté presente en todos los entornos.
 def _get_database_url() -> str:
     try:
         from app.core.config import settings
         return settings.database_url
     except Exception:
-        # Fallback para entornos de test sin .env configurado
         logger.warning("No se pudo cargar settings.database_url — usando SQLite en memoria para tests.")
         return "sqlite://"
-
 
 engine = create_engine(
     _get_database_url(),
@@ -114,5 +28,3 @@ engine = create_engine(
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base = declarative_base()

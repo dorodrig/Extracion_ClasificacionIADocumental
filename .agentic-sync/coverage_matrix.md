@@ -30,9 +30,9 @@
 | HU-03 | CA-01-12 | QA        | ❌ Excluido | handoff_qa_HU03_CA01-CA12.md         | 2026-05-23   |
 | HU-04 | CA-01-12 | Backend   | ✅ Aprobado | handoff_backend_HU04_CA01-CA12.md    | 2026-05-23   |
 | HU-04 | CA-01-12 | QA        | ❌ Excluido | handoff_qa_HU04_CA01-CA12.md         | 2026-05-23   |
-| HU-07 | CA-01-12 | Backend   | 📋 Planificado | handoff_backend_HU07_CA01-CA12.md    | —            |
-| HU-07 | CA-01-12 | Frontend  | 📋 Planificado | handoff_frontend_HU07_CA01-CA12.md   | —            |
-| HU-07 | CA-01-12 | QA        | 📋 Planificado | handoff_qa_HU07_CA01-CA12.md         | —            |
+| HU-07 | CA-01-12 | Backend   | ✅ Aprobado | handoff_backend_HU07_CA01-CA12.md    | 2026-05-23   |
+| HU-07 | CA-01-12 | Frontend  | ✅ Aprobado | handoff_frontend_HU07_CA01-CA12.md   | 2026-05-23   |
+| HU-07 | CA-01-12 | QA        | ❌ Excluido | handoff_qa_HU07_CA01-CA12.md         | 2026-05-23   |
 # Matriz de Cobertura — HU-02 Ingesta Dual de Documentos
 
 ## Iteración 1 -DEV-HU-2 (CA-01 a CA-04)
