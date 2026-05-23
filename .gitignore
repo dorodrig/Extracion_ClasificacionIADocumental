@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# Entorno virtual
+.venv/
+venv/
+env/
+
+# Variables de entorno — NUNCA a Git (Gobernanza §3.4)
+.env
+*.env
+!.env.example
+
+# Alembic
+alembic/versions/__pycache__/
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (FrontEnd)
+node_modules/
+dist/
+.vite/
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
