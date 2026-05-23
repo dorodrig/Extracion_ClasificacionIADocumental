@@ -6,7 +6,7 @@ HU-02 — CA-01 a CA-04: Ingesta Dual de Documentos (Escáner / Carpeta Local)
 Gobernanza §3.1, §3.2, §3.3, §3.4
 """
 import logging
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, BackgroundTasks
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
@@ -94,9 +94,12 @@ from app.services.storage.pdf_splitter import PyPDFSplitterAdapter
 async def prepare_batch(
     batch_id: str,
     request: BatchPrepareRequest,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user=Depends(require_role(["admin", "operario"])),
 ) -> JSONResponse:
+    from app.services.pipeline_orchestrator_service import PipelineOrchestratorService
+    
     repo = BatchRepository(db)
     storage = LocalStorageAdapter()
     pdf_splitter = PyPDFSplitterAdapter()
@@ -104,12 +107,24 @@ async def prepare_batch(
     
     try:
         response_data = service.prepare_batch(batch_id, request)
+        
+        # Encolar la orquestación del flujo OCR + IA en segundo plano
+        orchestrator = PipelineOrchestratorService(db)
+        # Recuperar la regla de trabajo del lote
+        batch = repo.get_by_batch_id(batch_id)
+        if batch and batch.regla_id:
+            background_tasks.add_task(
+                orchestrator.process_batch_pipeline,
+                batch_id=batch_id,
+                regla_id=batch.regla_id
+            )
+            
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content=APIResponse(
                 success=True,
                 data=response_data.model_dump(mode="json"),
-                message="Preparación completada"
+                message="Preparación completada. Flujo OCR e IA iniciado en segundo plano."
             ).model_dump()
         )
     except Exception as exc:

@@ -13,9 +13,8 @@ const api = axios.create({
   },
 });
 
-// Interceptor: agregar JWT automáticamente (cuando Auth esté implementado - HU-08)
+// Interceptor: agregar JWT automáticamente (HU-08)
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
   const token = useAuthStore.getState().token;
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
@@ -25,9 +24,6 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // TODO: HU-08 — Redirigir a login cuando Auth esté implementado
-      console.warn('GRM: 401 Unauthorized — Auth no implementada aún (HU-08)');
     if (error.response && error.response.status === 401) {
       useAuthStore.getState().logout();
       if (window.location.pathname !== '/login') {
