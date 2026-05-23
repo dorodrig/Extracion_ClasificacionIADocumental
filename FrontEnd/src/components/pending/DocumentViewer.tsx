@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { usePendientesStore } from '../../store/pendientesStore';
 import { PDFViewer } from '../pdf-viewer/PDFViewer';
 import { ExtractedDataPanel } from './ExtractedDataPanel';
+import { DocumentTimeline } from '../auditoria/DocumentTimeline';
 
 export const DocumentViewer: React.FC = () => {
   const { documentoSeleccionado, documentos, cerrarVisor, navegarVisor } = usePendientesStore();
+  const [showTimeline, setShowTimeline] = useState(false);
 
   if (!documentoSeleccionado) return null;
 
@@ -32,6 +34,13 @@ export const DocumentViewer: React.FC = () => {
         
         <div className="nav-buttons">
           <button 
+            className="history-btn"
+            onClick={() => setShowTimeline(true)}
+            style={{ marginRight: '16px', padding: '4px 8px', cursor: 'pointer' }}
+          >
+            🕒 Historial
+          </button>
+          <button 
             onClick={() => navegarVisor('anterior')}
             disabled={currentIndex <= 0}
           >
@@ -51,6 +60,13 @@ export const DocumentViewer: React.FC = () => {
         <PDFViewer url={documentoSeleccionado.pdfUrl} />
         <ExtractedDataPanel />
       </div>
+
+      {showTimeline && (
+        <DocumentTimeline 
+          documentId={documentoSeleccionado.id} 
+          onClose={() => setShowTimeline(false)} 
+        />
+      )}
     </div>
   );
 };

@@ -15,6 +15,9 @@ class DocumentoClasificado(Base):
     ruta_destino_final = Column(String(500), nullable=False)
     tipo_documento = Column(String(100), nullable=False)
     
+    # Preparado para futuro CA-05
+    # contenido_b64 = Column(String, doc="Contenido en base64 del documento clasificado", nullable=True)
+    
     timestamp_clasificacion = Column(DateTime, default=func.now())
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())

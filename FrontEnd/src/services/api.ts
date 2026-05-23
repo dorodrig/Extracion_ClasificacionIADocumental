@@ -3,6 +3,7 @@
  * Gobernanza §4.3 — Interceptores JWT + manejo de 401
  */
 import axios from 'axios';
+import { useAuthStore } from '../store/authStore';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
@@ -15,6 +16,7 @@ const api = axios.create({
 // Interceptor: agregar JWT automáticamente (cuando Auth esté implementado - HU-08)
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
+  const token = useAuthStore.getState().token;
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -26,6 +28,11 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // TODO: HU-08 — Redirigir a login cuando Auth esté implementado
       console.warn('GRM: 401 Unauthorized — Auth no implementada aún (HU-08)');
+    if (error.response && error.response.status === 401) {
+      useAuthStore.getState().logout();
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
