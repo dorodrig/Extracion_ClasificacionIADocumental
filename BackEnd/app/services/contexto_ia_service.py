@@ -234,7 +234,7 @@ class ContextoIAService:
         """Obtiene la regla de trabajo activa."""
         regla = (
             self.db.query(ReglasTrabajo)
-            .filter(ReglasTrabajo.id == regla_id, ReglasTrabajo.activa.is_(True))
+            .filter(ReglasTrabajo.id == regla_id, ReglasTrabajo.activa == True)
             .first()
         )
         if not regla:
