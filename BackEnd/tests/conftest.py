@@ -1,5 +1,5 @@
 import pytest
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, String
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 from fastapi.testclient import TestClient
@@ -18,11 +18,32 @@ engine = create_engine(
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
+def _patch_mssql_types_for_sqlite():
+    """
+    Reemplaza tipos MSSQL (UNIQUEIDENTIFIER) por tipos compatibles
+    con SQLite en todas las tablas registradas en Base.metadata.
+    """
+    from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
+    for table in Base.metadata.tables.values():
+        for col in table.columns:
+            if isinstance(col.type, UNIQUEIDENTIFIER):
+                col.type = String(36)
+
+
 @pytest.fixture(scope="session")
 def setup_db():
+    # Importar todos los modelos para que Base.metadata los conozca
+    import app.db.models  # noqa: F401
+    import app.db.models.documentos_clasificados  # noqa: F401
+    import app.db.models.documentos_pendientes  # noqa: F401
+    import app.db.models.auth_stubs  # noqa: F401
+
+    _patch_mssql_types_for_sqlite()
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)
+
 
 @pytest.fixture(scope="function")
 def db_session(setup_db):
@@ -33,6 +54,7 @@ def db_session(setup_db):
     session.close()
     transaction.rollback()
     connection.close()
+
 
 @pytest.fixture(scope="function")
 def client(db_session):
