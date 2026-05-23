@@ -14,6 +14,10 @@ from app.db.database import Base
 
 # Importar todos los modelos para que Alembic los detecte
 from app.db.models.rule_db import ReglasTrabajo  # noqa: F401
+from app.db.models.documento_db import DocumentosLote  # noqa: F401
+from app.db.models.ocr_db import OcrResultadosPaginas  # noqa: F401
+from app.db.models.contexto_resultado_db import AgenteContextoResultados  # noqa: F401
+from app.db.models.log_ia_invocacion_db import LogIAInvocacion  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

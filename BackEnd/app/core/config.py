@@ -23,15 +23,16 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 480
 
-    # Futuro: Google Gemini (HU-04, HU-05)
-    # gemini_api_key: str = ""
-    # gemini_model: str = "gemini-1.5-pro"
-    # gemini_timeout_seconds: int = 30
+    # Google Gemini (HU-04, HU-05)
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-1.5-pro"
+    gemini_timeout_seconds: int = 30
+    gemini_max_retries: int = 3
 
-    # Futuro: AWS Textract (HU-03)
-    # aws_access_key_id: str = ""
-    # aws_secret_access_key: str = ""
-    # aws_default_region: str = "us-east-1"
+    # AWS Textract (HU-03)
+    aws_access_key_id: str = ""
+    aws_secret_access_key: str = ""
+    aws_default_region: str = "us-east-1"
 
     # Futuro: Celery
     # celery_broker_url: str = "redis://localhost:6379/0"

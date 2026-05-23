@@ -13,6 +13,14 @@ api_v1_router = APIRouter(prefix="/api/v1")
 # HU-01 — Reglas de Trabajo
 api_v1_router.include_router(rules.router)
 
+# HU-03 — OCR
+from app.api.v1.endpoints import ocr
+api_v1_router.include_router(ocr.router)
+
+# HU-04 — Agente de Contexto IA
+from app.api.v1.endpoints import contexto
+api_v1_router.include_router(contexto.router)
+
 # Futuro: Agregar más routers según se implementen las HUs
 # from app.api.v1.endpoints import auth, batches, documents, pendientes
 # api_v1_router.include_router(auth.router)        # HU-08
