@@ -29,7 +29,8 @@ class PendientesRepository:
             )
             
         total = db_query.count()
-        results = db_query.order_by(AgenteContextoResultados.id.desc()).offset(skip).limit(limit).all()
+        db_query = db_query.order_by(AgenteContextoResultados.id.desc())
+        results = db_query.offset(skip).limit(limit).all()
         
         items = []
         for res, doc, lote in results:
