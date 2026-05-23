@@ -6,7 +6,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
-import { Layout } from './components/common/Layout';
+
 import { RulesPage } from './pages/RulesPage';
 import { IntakeDashboard } from './components/intake/IntakeDashboard';
 import { PendientesPage } from './pages/PendientesPage';
@@ -105,12 +105,12 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
           <nav>
             <ul>
               <li>Inicio</li>
-              {user?.role === 'Admin' && <li onClick={() => navigate('/admin/gestion-usuarios')} style={{cursor: 'pointer'}}>Usuarios</li>}
+              {user?.role === 'Admin' && <li onClick={() => navigate('/admin/dashboard')} style={{cursor: 'pointer'}}>Usuarios</li>}
               {user?.role !== 'Admin' && (
                 <>
-                  <li>Reglas</li>
-                  <li className="active" onClick={() => navigate('/intake')} style={{cursor: 'pointer'}}>Ingresar◄</li>
-                  <li onClick={() => navigate('/pendientes')} style={{cursor: 'pointer'}}>Pendientes</li>
+                  <li onClick={() => navigate('/operario/reglas')} style={{cursor: 'pointer'}}>Reglas</li>
+                  <li className="active" onClick={() => navigate('/operario/intake')} style={{cursor: 'pointer'}}>Ingresar◄</li>
+                  <li onClick={() => navigate('/operario/pendientes')} style={{cursor: 'pointer'}}>Pendientes</li>
                   <li>Historial</li>
                 </>
               )}
@@ -147,15 +147,21 @@ function App() {
 
             {/* Admin routes */}
             <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
-              <Route path="/admin/gestion-usuarios" element={<AppLayout><GestionUsuariosPage /></AppLayout>} />
+              <Route path="/admin/dashboard" element={<AppLayout><GestionUsuariosPage /></AppLayout>} />
+              <Route path="/admin/gestion-usuarios" element={<Navigate to="/admin/dashboard" replace />} />
             </Route>
 
             {/* Operario / Cliente routes — con AppLayout */}
             <Route element={<ProtectedRoute allowedRoles={['Operario', 'Cliente']} />}>
-              <Route path="/intake" element={<AppLayout><IntakeDashboard /></AppLayout>} />
-              <Route path="/pendientes" element={<AppLayout><PendientesPage /></AppLayout>} />
-              <Route path="/reglas" element={<AppLayout><RulesPage /></AppLayout>} />
+              <Route path="/operario/intake" element={<AppLayout><IntakeDashboard /></AppLayout>} />
+              <Route path="/operario/pendientes" element={<AppLayout><PendientesPage /></AppLayout>} />
+              <Route path="/operario/reglas" element={<AppLayout><RulesPage /></AppLayout>} />
+              {/* Alias for backward compatibility with intake redirect */}
+              <Route path="/monitoreo-ocr" element={<Navigate to="/operario/pendientes" replace />} />
             </Route>
+
+            {/* Catch-all route to prevent blank screens on unmatched routes */}
+            <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </SessionManager>
       </Router>
