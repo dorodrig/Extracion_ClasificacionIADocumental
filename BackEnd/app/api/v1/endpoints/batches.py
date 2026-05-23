@@ -14,6 +14,7 @@ from app.core.dependencies import get_db, require_role
 from app.schemas.batches import BatchCreate, BatchResponse
 from app.schemas.common import APIResponse
 from app.services.batch_service import BatchService
+from app.db.repositories.batch_repository import BatchRepository
 from app.core.exceptions import BatchCreationException
 
 logger = logging.getLogger("grm.batches")
@@ -56,7 +57,8 @@ async def create_batch(
     )
 
     try:
-        service = BatchService(db)
+        repo = BatchRepository(db)
+        service = BatchService(repo)
         batch_response = service.create_batch(batch_in, operario_id=current_user.id)
         logger.info("Lote creado exitosamente — batch_id=%s", batch_response.batch_id)
         return JSONResponse(
