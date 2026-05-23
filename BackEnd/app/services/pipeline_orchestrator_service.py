@@ -43,6 +43,11 @@ class PipelineOrchestratorService:
         
         # 1. Obtener todos los documentos físicos en la ruta temporal
         archivos = glob.glob(os.path.join(batch.ruta_temporal, "*.*"))
+        
+        # HOTFIX: Procesar solo el primer documento para evitar loops prolongados
+        if archivos:
+            archivos = [archivos[0]]
+            
         if not archivos:
             logger.warning(f"No hay archivos en la ruta temporal para lote {batch_id}")
             self.batch_repo.update_estado(batch_id, "completado_vacio")
