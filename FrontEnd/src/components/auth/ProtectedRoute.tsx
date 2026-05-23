@@ -9,6 +9,7 @@ export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
   const { token, user, selectedClient } = useAuthStore();
   const location = useLocation();
 
+  /*
   if (!token || !user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
@@ -21,6 +22,7 @@ export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
   if (user.role === 'Operario' && !selectedClient && location.pathname !== '/operario/seleccion-cliente') {
     return <Navigate to="/operario/seleccion-cliente" replace />;
   }
+  */
 
   return <Outlet />;
 };

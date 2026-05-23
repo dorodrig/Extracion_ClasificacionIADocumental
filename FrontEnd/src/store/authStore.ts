@@ -17,6 +17,7 @@ interface AuthState {
 }
 
 const getInitialState = () => {
+  /*
   const token = localStorage.getItem('token');
   const userStr = localStorage.getItem('user');
   const selectedClient = localStorage.getItem('selectedClient');
@@ -25,6 +26,12 @@ const getInitialState = () => {
     token: token || null,
     user: userStr ? JSON.parse(userStr) : null,
     selectedClient: selectedClient || null,
+  };
+  */
+  return {
+    token: 'bypass-token',
+    user: { id: '0', cedula: '00000', role: 'Admin', nombre: 'Mock Admin' },
+    selectedClient: 'MockClient',
   };
 };
 

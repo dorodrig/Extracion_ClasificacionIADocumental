@@ -15,6 +15,9 @@ export const LoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // BYPASS
+    navigate('/admin/dashboard');
+    /*
     if (!cedula.trim() || !password.trim()) {
       setError('Cédula y contraseña son requeridas');
       return;
@@ -64,6 +67,7 @@ export const LoginPage = () => {
     } finally {
       setLoading(false);
     }
+    */
   };
 
   return (
