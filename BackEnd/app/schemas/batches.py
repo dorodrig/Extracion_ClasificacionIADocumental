@@ -31,8 +31,8 @@ class BatchResponse(BaseModel):
 
 class DocumentoIngestado(BaseModel):
     nombre_archivo: str
-    extension: str
-    ruta_original: str
+    extension: Optional[str] = None
+    ruta_original: Optional[str] = None
     total_paginas: Optional[int] = None
 
 class BatchPrepareRequest(BaseModel):
