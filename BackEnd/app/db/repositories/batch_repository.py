@@ -1,7 +1,15 @@
 from sqlalchemy.orm import Session
 from app.domain.ports.batch_repository import BatchRepositoryPort
 from app.domain.models.batch import Batch
-from app.db.models.batches import LoteProcesamiento
+from app.db.models.documentos_lote import LoteProcesamiento
+import uuid
+
+def _is_valid_uuid(val: str) -> bool:
+    try:
+        uuid.UUID(str(val))
+        return True
+    except ValueError:
+        return False
 
 class BatchRepository(BatchRepositoryPort):
     def __init__(self, db: Session):
@@ -27,28 +35,37 @@ class BatchRepository(BatchRepositoryPort):
         return batch
 
     def update_ruta_temporal(self, batch_id: str, ruta_temporal: str) -> None:
+        if not _is_valid_uuid(batch_id):
+            return
         db_batch = self.db.query(LoteProcesamiento).filter(LoteProcesamiento.batch_id == batch_id).first()
         if db_batch:
             db_batch.ruta_temporal = ruta_temporal
             self.db.commit()
 
     def update_estado(self, batch_id: str, estado: str) -> None:
+        if not _is_valid_uuid(batch_id):
+            return
         db_batch = self.db.query(LoteProcesamiento).filter(LoteProcesamiento.batch_id == batch_id).first()
         if db_batch:
             db_batch.estado = estado
             self.db.commit()
 
     def get_by_batch_id(self, batch_id: str) -> Batch:
+        if not _is_valid_uuid(batch_id):
+            return None
         db_batch = self.db.query(LoteProcesamiento).filter(LoteProcesamiento.batch_id == batch_id).first()
         if not db_batch:
             return None
         return Batch(
+            id=db_batch.id,
             batch_id=db_batch.batch_id,
             regla_id=db_batch.regla_id,
             cliente_id=db_batch.cliente_id,
             operario_id=db_batch.operario_id,
             modo_ingesta=db_batch.modo_ingesta,
             ruta_temporal=db_batch.ruta_temporal,
+            total_docs=db_batch.total_docs,
+            total_paginas=db_batch.total_paginas,
             estado=db_batch.estado,
             created_at=db_batch.created_at,
             completed_at=db_batch.completed_at
