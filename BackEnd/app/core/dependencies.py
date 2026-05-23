@@ -76,3 +76,12 @@ def require_role(allowed_roles: list[str]):
         return MockUser()
 
     return _mock_dependency
+
+def get_current_cliente() -> MockUser:
+    """
+    Mock de dependencia para obtener el cliente actual (HU-07 / HU-08).
+    Simula que un cliente_id viene en el token JWT.
+    """
+    logger.debug("Mock auth: simulando cliente autenticado (cliente_id=1).")
+    return MockUser(id=2, cedula="1111111111", nombre="Cliente Mock", rol="cliente", cliente_id=1)
+

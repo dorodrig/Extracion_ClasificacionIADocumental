@@ -2,7 +2,7 @@
  * Tests unitarios — RuleForm (CA-01, CA-03, CA-04, CA-05, CA-06)
  * Valida: botón deshabilitado, habilitación tras completar campos, renderizado en modo edición.
  */
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -165,5 +165,30 @@ describe('RuleForm — CA-06: Campos dinámicos a extraer', () => {
       const warnings = screen.getAllByText(/Nombre de campo duplicado/i);
       expect(warnings.length).toBeGreaterThanOrEqual(1);
     });
+  });
+});
+
+// --- CA-07 / CA-08: Nuevos Criterios ---
+describe('RuleForm — CA-07/CA-08: Nuevos Criterios', () => {
+  it('muestra warning si se usa una variable no definida en el patrón de carpeta (CA-07)', async () => {
+    const user = userEvent.setup();
+    renderRuleForm();
+    
+    const inputPatron = screen.getByPlaceholderText(/\/{CC}/i);
+    fireEvent.change(inputPatron, { target: { value: '{VariableFalsa}' } });
+    
+    await waitFor(() => {
+      const warning = screen.getByText(/Las siguientes variables no existen: \{VariableFalsa\}/i);
+      expect(warning).toBeInTheDocument();
+    });
+  });
+
+  it('muestra el Umbral OCR fijo y visible en 95% (CA-08)', () => {
+    renderRuleForm();
+    
+    const text95 = screen.getByText((content, element) => content.includes('95%') && element?.tagName === 'SPAN');
+    expect(text95).toBeInTheDocument();
+    const infoText = screen.getByText((content, element) => content.includes('fijado al 95%') && element?.tagName === 'P');
+    expect(infoText).toBeInTheDocument();
   });
 });

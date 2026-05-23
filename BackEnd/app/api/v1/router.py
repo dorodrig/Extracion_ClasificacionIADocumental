@@ -21,6 +21,10 @@ api_v1_router.include_router(ocr.router)
 from app.api.v1.endpoints import contexto
 api_v1_router.include_router(contexto.router)
 
+# HU-07 — Portal Web de Consulta para Cliente Final
+from app.api.v1.endpoints import cliente
+api_v1_router.include_router(cliente.router, prefix="/cliente", tags=["Cliente"])
+
 # Futuro: Agregar más routers según se implementen las HUs
 # from app.api.v1.endpoints import auth, batches, documents, pendientes
 # api_v1_router.include_router(auth.router)        # HU-08

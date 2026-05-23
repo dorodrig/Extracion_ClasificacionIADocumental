@@ -5,8 +5,14 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RuleList } from './RuleList';
 import type { Rule } from '../../types/rule.types';
+
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => mockNavigate,
+}));
 
 // --- Datos de prueba ---
 const makeRule = (overrides: Partial<Rule> = {}): Rule => ({
@@ -36,22 +42,35 @@ const mockRulesMultiple: Rule[] = [
 
 let onEditMock: ReturnType<typeof vi.fn>;
 let onNewRuleMock: ReturnType<typeof vi.fn>;
+let queryClient: QueryClient;
 
 beforeEach(() => {
   onEditMock = vi.fn();
   onNewRuleMock = vi.fn();
+  mockNavigate.mockClear();
+  queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
 });
+
+const renderRuleList = (props: any = {}) => {
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <RuleList rules={[]} onEdit={onEditMock} onNewRule={onNewRuleMock} {...props} />
+    </QueryClientProvider>
+  );
+};
 
 // --- CA-01: Primer acceso sin reglas ---
 describe('RuleList — CA-01: Lista vacía', () => {
   it('muestra "00" en el contador de reglas activas cuando no hay reglas', () => {
-    render(<RuleList rules={[]} onEdit={onEditMock} onNewRule={onNewRuleMock} />);
+    renderRuleList({ rules: [] });
 
     expect(screen.getByText('00')).toBeInTheDocument();
   });
 
   it('renderiza solo la fila de cabecera de la tabla (sin filas de datos)', () => {
-    render(<RuleList rules={[]} onEdit={onEditMock} onNewRule={onNewRuleMock} />);
+    renderRuleList({ rules: [] });
 
     // La tabla tiene un thead con una fila
     const rows = screen.getAllByRole('row');
@@ -59,7 +78,7 @@ describe('RuleList — CA-01: Lista vacía', () => {
   });
 
   it('no renderiza controles de paginación con lista vacía', () => {
-    render(<RuleList rules={[]} onEdit={onEditMock} onNewRule={onNewRuleMock} />);
+    renderRuleList({ rules: [] });
 
     expect(screen.queryByText(/Anterior/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Siguiente/i)).not.toBeInTheDocument();
@@ -69,13 +88,13 @@ describe('RuleList — CA-01: Lista vacía', () => {
 // --- CA-02: Listado con reglas existentes ---
 describe('RuleList — CA-02: Lista con datos', () => {
   it('muestra el conteo correcto de reglas en la stat card', () => {
-    render(<RuleList rules={mockRulesMultiple} onEdit={onEditMock} onNewRule={onNewRuleMock} />);
+    renderRuleList({ rules: mockRulesMultiple });
 
     expect(screen.getByText('03')).toBeInTheDocument();
   });
 
   it('renderiza una fila por cada regla más la cabecera', () => {
-    render(<RuleList rules={mockRulesMultiple} onEdit={onEditMock} onNewRule={onNewRuleMock} />);
+    renderRuleList({ rules: mockRulesMultiple });
 
     const rows = screen.getAllByRole('row');
     // 1 header + 3 data rows = 4
@@ -83,7 +102,7 @@ describe('RuleList — CA-02: Lista con datos', () => {
   });
 
   it('muestra nombre, tipo de documento y badge de versión de cada regla', () => {
-    render(<RuleList rules={mockRulesMultiple} onEdit={onEditMock} onNewRule={onNewRuleMock} />);
+    renderRuleList({ rules: mockRulesMultiple });
 
     expect(screen.getByText('Regla Cédulas')).toBeInTheDocument();
     expect(screen.getByText('Regla Pagarés')).toBeInTheDocument();
@@ -94,7 +113,7 @@ describe('RuleList — CA-02: Lista con datos', () => {
   });
 
   it('muestra badges de modo de entrada correctamente (Escáner / Carpeta)', () => {
-    render(<RuleList rules={mockRulesMultiple} onEdit={onEditMock} onNewRule={onNewRuleMock} />);
+    renderRuleList({ rules: mockRulesMultiple });
 
     // Dos reglas con scanner, una con carpeta
     const scannerBadges = screen.getAllByText(/Escáner/i);
@@ -106,7 +125,7 @@ describe('RuleList — CA-02: Lista con datos', () => {
 
   it('llama a onEdit al hacer clic en el botón "Editar"', async () => {
     const user = userEvent.setup();
-    render(<RuleList rules={mockRulesMultiple} onEdit={onEditMock} onNewRule={onNewRuleMock} />);
+    renderRuleList({ rules: mockRulesMultiple });
 
     const editButtons = screen.getAllByRole('button', { name: /Editar/i });
     await user.click(editButtons[0]);
@@ -117,7 +136,7 @@ describe('RuleList — CA-02: Lista con datos', () => {
 
   it('abre el drawer de detalle al hacer clic en el botón "👁"', async () => {
     const user = userEvent.setup();
-    render(<RuleList rules={mockRulesMultiple} onEdit={onEditMock} onNewRule={onNewRuleMock} />);
+    renderRuleList({ rules: mockRulesMultiple });
 
     const detailButtons = screen.getAllByRole('button', { name: '👁' });
     await user.click(detailButtons[0]);
@@ -128,5 +147,19 @@ describe('RuleList — CA-02: Lista con datos', () => {
 
     // Verificar que el drawer muestra la etiqueta de Umbral OCR
     expect(screen.getByText('Umbral OCR')).toBeInTheDocument();
+  });
+});
+
+// --- CA-09: Inicio del proceso de extracción ---
+describe('RuleList — CA-09: Inicio de Extracción', () => {
+  it('navega a /ingesta con el ID de la regla al hacer clic en "Iniciar Proceso"', async () => {
+    const user = userEvent.setup();
+    renderRuleList({ rules: mockRulesMultiple });
+
+    const startButtons = screen.getAllByRole('button', { name: /Iniciar Proceso/i });
+    await user.click(startButtons[0]);
+
+    // mockRulesMultiple[0] tiene id=1
+    expect(mockNavigate).toHaveBeenCalledWith('/ingesta?rule_id=1');
   });
 });
