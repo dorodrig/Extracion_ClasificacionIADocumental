@@ -14,9 +14,11 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ batchId, o
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let timeoutId: NodeJS.Timeout;
+    let isPolling = true;
 
     const checkStatus = async () => {
+      if (!isPolling) return;
       try {
         const response = await batchService.getBatchStatus(batchId);
         if (response.success && response.data) {
@@ -29,31 +31,35 @@ export const IngestionProgress: React.FC<IngestionProgressProps> = ({ batchId, o
 
           if (estado === 'completado') {
             setBatchStatus('completed');
-            clearInterval(interval);
+            isPolling = false;
             onComplete();
           } else if (estado === 'error') {
             setBatchStatus('error');
             setErrorMsg('Ocurrió un error durante la preparación del lote.');
-            clearInterval(interval);
+            isPolling = false;
+          } else {
+            // Sigue en proceso, programar siguiente revisión
+            if (isPolling) timeoutId = setTimeout(checkStatus, 1500);
           }
         } else {
           setBatchStatus('error');
           setErrorMsg(response.error || 'Error desconocido al consultar el estado.');
-          clearInterval(interval);
+          isPolling = false;
         }
       } catch (err) {
         setBatchStatus('error');
         setErrorMsg('Error de conexión con el servidor.');
-        clearInterval(interval);
+        isPolling = false;
       }
     };
 
-    // Initial check
+    // Iniciar polling
     checkStatus();
-    
-    interval = setInterval(checkStatus, 1500);
 
-    return () => clearInterval(interval);
+    return () => {
+      isPolling = false;
+      clearTimeout(timeoutId);
+    };
   }, [batchId, onComplete, setBatchProgress, setBatchStatus]);
 
   if (errorMsg) {

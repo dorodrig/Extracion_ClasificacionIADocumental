@@ -5,6 +5,7 @@ import { DocumentList } from './DocumentList';
 import dashboardStyles from './IntakeDashboard.module.scss';
 import styles from './ScannerModule.module.scss';
 import { Printer, AlertTriangle, RefreshCcw, Scan } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export const ScannerModule: React.FC = () => {
   const [connectedDevice, setConnectedDevice] = useState<string | null>(null);
@@ -20,7 +21,14 @@ export const ScannerModule: React.FC = () => {
     
     // Create batch in backend
     batchService.createBatch('scanner').then(res => {
-      if (res.data) setActiveBatch(res.data.batch_id);
+      if (res.success && res.data) {
+        setActiveBatch(res.data.batch_id);
+      } else {
+        toast.error(res.error || 'Error al crear el lote de procesamiento');
+      }
+    }).catch(e => {
+      toast.error('Error al crear el lote de procesamiento');
+      console.error(e);
     });
   };
 

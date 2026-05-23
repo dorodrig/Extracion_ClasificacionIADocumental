@@ -36,18 +36,17 @@ export interface APIResponse<T> {
 export const batchService = {
   createBatch: async (mode: 'scanner' | 'carpeta'): Promise<APIResponse<Batch>> => {
     try {
-      const response = await api.post<APIResponse<Batch>>('/api/v1/batches', { mode });
+      const response = await api.post<APIResponse<Batch>>('/api/v1/batches', { 
+        regla_id: 1, 
+        cliente_id: 1, 
+        modo_ingesta: mode 
+      });
       return response.data;
-    } catch (error) {
-      // Mock fallback as approved by the architect
-      console.warn('Backend unavailable, using mock batch_id');
-      return {
-        success: true,
-        data: {
-          id: Date.now(),
-          batch_id: `GRM-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-001`,
-          estado: 'created'
-        }
+    } catch (error: any) {
+      console.error('Error al crear el lote', error);
+      return { 
+        success: false, 
+        error: error.response?.data?.error || error.message || 'Error al crear el lote de procesamiento' 
       };
     }
   },

@@ -5,6 +5,7 @@ import { DocumentList } from './DocumentList';
 import dashboardStyles from './IntakeDashboard.module.scss';
 import styles from './FolderModule.module.scss';
 import { Folder, AlertTriangle } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export const FolderModule: React.FC = () => {
   const { addDocuments, documentsList, setActiveBatch } = useBatchStore();
@@ -51,8 +52,13 @@ export const FolderModule: React.FC = () => {
     // Create batch in backend
     try {
       const res = await batchService.createBatch('carpeta');
-      if (res.data) setActiveBatch(res.data.batch_id);
-    } catch (e) {
+      if (res.success && res.data) {
+        setActiveBatch(res.data.batch_id);
+      } else {
+        toast.error(res.error || 'Error al crear el lote de procesamiento');
+      }
+    } catch (e: any) {
+      toast.error('Error al crear el lote de procesamiento');
       console.error(e);
     }
     
