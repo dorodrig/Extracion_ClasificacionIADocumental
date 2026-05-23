@@ -22,7 +22,7 @@ class PendientesRepository:
             )
             
         total = db_query.count()
-        items = db_query.offset(skip).limit(limit).all()
+        items = db_query.order_by(DocumentoPendiente.id.desc()).offset(skip).limit(limit).all()
         return items, total
 
     def get_pendiente_by_id(self, pendiente_id: int) -> Optional[DocumentoPendiente]:
