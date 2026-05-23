@@ -1,0 +1,20 @@
+# Backend GRM — Python 3.12+
+# Framework
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
+
+# ORM y Base de Datos
+sqlalchemy>=2.0.36
+pyodbc>=5.2.0
+alembic>=1.14.0
+
+# Validación y Configuración
+pydantic>=2.10.0
+pydantic-settings>=2.7.0
+
+# Testing
+pytest>=8.3.0
+httpx>=0.28.0
+
+# Utilidades
+python-dotenv>=1.0.0
