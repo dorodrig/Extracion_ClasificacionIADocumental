@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { IntakeDashboard } from '@/components/intake/IntakeDashboard';
+import { PendientesPage } from '@/pages/PendientesPage';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Navigate to="/intake" replace />} />
               <Route path="/intake" element={<IntakeDashboard />} />
+              <Route path="/pendientes" element={<PendientesPage />} />
             </Routes>
           </main>
         </div>

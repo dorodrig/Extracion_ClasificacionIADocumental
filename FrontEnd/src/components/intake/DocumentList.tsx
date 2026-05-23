@@ -71,13 +71,13 @@ export const DocumentList: React.FC<DocumentListProps> = ({ mode }) => {
         <table>
           <thead>
             <tr>
-              <th width="40">#</th>
+              <th style={{ width: "40px" }}>#</th>
               <th>Nombre {mode === 'carpeta' && 'archivo'}</th>
-              {mode === 'carpeta' && <th width="80">Ext.</th>}
-              <th width="80">Páginas</th>
-              <th width="100">Tamaño</th>
-              {mode === 'scanner' && <th width="120">Estado</th>}
-              <th width="80" className={styles['text-center']}>
+              {mode === 'carpeta' && <th style={{ width: "80px" }}>Ext.</th>}
+              <th style={{ width: "80px" }}>Páginas</th>
+              <th style={{ width: "100px" }}>Tamaño</th>
+              {mode === 'scanner' && <th style={{ width: "120px" }}>Estado</th>}
+              <th style={{ width: "80px" }} className={styles['text-center']}>
                 {mode === 'carpeta' ? (
                   <input 
                     type="checkbox" 

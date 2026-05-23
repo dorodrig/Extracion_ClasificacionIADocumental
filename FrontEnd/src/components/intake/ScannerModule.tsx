@@ -9,7 +9,7 @@ import { Printer, AlertTriangle, RefreshCcw, Scan } from 'lucide-react';
 export const ScannerModule: React.FC = () => {
   const [connectedDevice, setConnectedDevice] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
   
   const { addDocuments, documentsList, setActiveBatch } = useBatchStore();
 

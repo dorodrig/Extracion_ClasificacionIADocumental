@@ -1,28 +1,30 @@
-# Solicitud de Aprobación - Frontend (HU-02, CA-05 y CA-08)
+# Solicitud de Revisión — Frontend HU-06
 
-**Resumen del plan propuesto:**
-Se implementará el componente `OmittedFilesAlert` para notificar al usuario sobre extensiones inválidas filtradas localmente y desde el backend. Se creará `IngestionProgress` para gestionar el polling de estado durante el proceso de preparación del batch y mostrar feedback en la UI. Adicionalmente, se migrarán todos los inline styles de los componentes correspondientes a sus archivos SCSS para saldar la deuda técnica de la iteración 1.
+## Resumen del plan propuesto
+Implementación de la HU-06 (Validación Humana: Pendientes y Visor). Se construirán dos vistas principales integradas en `PendientesPage.tsx`:
+1. **Lista de Documentos Pendientes**: Incluye filtros de búsqueda y la tabla con tiempos de espera semaforizados (verde, ámbar, rojo).
+2. **Visor de Documentos (Split Screen 65/35)**: Integración de `react-pdf` en el panel izquierdo (dark mode #0d1117) y un panel derecho reactivo para validación, edición y envío de instrucciones al agente de IA.
 
-**Archivos a crear/modificar:**
-- [NUEVO] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\intake\OmittedFilesAlert.tsx`
-- [NUEVO] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\intake\OmittedFilesAlert.module.scss`
-- [NUEVO] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\intake\IngestionProgress.tsx`
-- [NUEVO] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\intake\IngestionProgress.module.scss`
-- [MODIFICAR] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\intake\DocumentList.tsx`
-- [MODIFICAR] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\intake\IntakeDashboard.tsx`
-- [MODIFICAR] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\intake\ScannerModule.tsx`
-- [MODIFICAR] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\intake\FolderModule.tsx`
-- [MODIFICAR] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\services\batchService.ts`
-- [MODIFICAR] `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\store\batchStore.ts`
+## Archivos a crear/modificar
+- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\pages\PendientesPage.tsx`
+- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\pending\PendingDocumentList.tsx`
+- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\pending\PendingFilters.tsx`
+- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\pending\DocumentViewer.tsx`
+- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\pending\ExtractedDataPanel.tsx`
+- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\components\pdf-viewer\PDFViewer.tsx`
+- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\services\pendientesService.ts`
+- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\store\pendientesStore.ts`
+- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\styles\components\_pendientes.scss`
+- `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\FrontEnd\src\styles\components\_visor.scss`
 
-**Decisiones técnicas clave tomadas:**
-- Se utilizará `setInterval` en un `useEffect` dentro de `IngestionProgress` para el polling de estado cada 1.5s, manejando un clean-up correcto en el desmontaje.
-- El estado del polling será guardado en el store global de Zustand (`batchProgress`) para asegurar persistencia visual aunque otros componentes requieran actualizarse.
-- El arreglo de archivos omitidos retornados por el endpoint `/prepare` se renderizará combinándose o complementando el de `FolderModule`.
+## Decisiones técnicas clave tomadas
+- Se utilizará `Zustand` para el manejo del estado (ej. documento activo, lista de pendientes) para evitar prop drilling entre el visor y la lista.
+- Se implementará el visor a pantalla completa (full-page) tal como indica el mockup narrativo, gestionando la visibilidad condicional dentro de `PendientesPage.tsx`.
+- Se respetará estrictamente el uso de tokens semánticos definidos en `_variables.scss` (`$color-error`, `$color-warning`, `$color-success`) para la semaforización.
 
-**Riesgos identificados:**
-- El intervalo de polling podría no limpiarse si hay desmontajes no controlados del componente, el `useEffect` será estricto al retornarlo.
-- Mockear los endpoints de `prepare` y `status` si el backend aún no está disponible para probar la funcionalidad localmente.
+## Riesgos identificados
+- Rendimiento en el renderizado del visor PDF si los archivos son muy pesados; mitigaremos limitando el renderizado solo a la página activa usando paginación en `react-pdf`.
+- Manejo de WebSockets para notificaciones (requiere coordinación con backend si no están disponibles aún).
 
-**Preguntas para el Arquitecto:**
-- Ninguna. Cumple con todos los lineamientos indicados en el handoff.
+## Preguntas para el Arquitecto
+Ninguna. Todo claro en los lineamientos y mockups.
