@@ -10,8 +10,12 @@ export const ExtractedDataPanel: React.FC = () => {
 
   if (!documentoSeleccionado) return null;
 
+  // Protección contra datos encapsulados
+  const docData = (documentoSeleccionado as any).data || documentoSeleccionado;
+  const camposSeguros = Array.isArray(docData?.campos) ? docData.campos : [];
+
   // Lógica para determinar el campo problemático principal
-  const camposConError = documentoSeleccionado.campos.filter(c => c.estado !== 'Validado');
+  const camposConError = camposSeguros.filter((c: any) => c.estado !== 'Validado');
   const multipleErrores = camposConError.length > 1;
 
   // Setear el campo activo inicialmente si hay un error
@@ -44,8 +48,8 @@ export const ExtractedDataPanel: React.FC = () => {
 
   const handleGuardarCorreccion = async () => {
     try {
-      await pendientesService.corregirDocumento(documentoSeleccionado.id, camposEditables);
-      setDocumentoEnReprocesamiento(documentoSeleccionado.id);
+      await pendientesService.corregirDocumento(docData.id, camposEditables);
+      setDocumentoEnReprocesamiento(docData.id);
       cerrarVisor();
     } catch (err) {
       console.error('Error al guardar corrección', err);
@@ -56,8 +60,8 @@ export const ExtractedDataPanel: React.FC = () => {
   const handleEnviarInstruccion = async () => {
     if (instruccionIA.length < 20) return;
     try {
-      await pendientesService.enviarInstruccion(documentoSeleccionado.id, instruccionIA);
-      setDocumentoEnReprocesamiento(documentoSeleccionado.id);
+      await pendientesService.enviarInstruccion(docData.id, instruccionIA);
+      setDocumentoEnReprocesamiento(docData.id);
       cerrarVisor();
     } catch (err) {
       console.error('Error al enviar instrucción', err);
@@ -69,7 +73,7 @@ export const ExtractedDataPanel: React.FC = () => {
     const motivo = window.prompt('Motivo de descarte (obligatorio):');
     if (motivo) {
       try {
-        await pendientesService.descartarDocumento(documentoSeleccionado.id, motivo);
+        await pendientesService.descartarDocumento(docData.id, motivo);
         cerrarVisor();
       } catch (err) {
         console.error('Error al descartar', err);
@@ -131,10 +135,13 @@ export const ExtractedDataPanel: React.FC = () => {
         <div className="subtitle">
           Revisa y corrige los campos extraídos o envía instrucciones al agente.
         </div>
+        <div className="motivo-rechazo" style={{ marginTop: '12px', padding: '12px', background: 'rgba(248, 81, 73, 0.1)', border: '1px solid rgba(248, 81, 73, 0.4)', borderRadius: '6px', color: '#f85149', fontWeight: 'bold' }}>
+          Motivo de Rechazo: {docData?.motivoRechazo || ''}
+        </div>
       </div>
 
       <div className="fields-container">
-        {documentoSeleccionado.campos.map(renderField)}
+        {camposSeguros.map(renderField)}
       </div>
 
       <div className="actions-container">

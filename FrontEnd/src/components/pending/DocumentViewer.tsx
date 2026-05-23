@@ -10,11 +10,13 @@ export const DocumentViewer: React.FC = () => {
 
   if (!documentoSeleccionado) return null;
 
-  const currentIndex = documentos.findIndex(d => d.id === documentoSeleccionado.id);
-  const total = documentos.length;
+  const docsArray = Array.isArray(documentos) ? documentos : (documentos as any)?.data || [];
+
+  const currentIndex = docsArray.findIndex((d: any) => d?.id === documentoSeleccionado?.id);
+  const total = docsArray.length;
   
   // Encontrar el nombre del archivo original
-  const docOriginal = documentos.find(d => d.id === documentoSeleccionado.id);
+  const docOriginal = docsArray.find((d: any) => d?.id === documentoSeleccionado?.id);
   const fileName = docOriginal ? docOriginal.filename : 'Documento';
 
   return (
@@ -29,7 +31,12 @@ export const DocumentViewer: React.FC = () => {
         </a>
         
         <div className="doc-title">
-          📄 {fileName} {docOriginal && `| Cliente: ${docOriginal.cliente}`}
+          📄 {fileName} {docOriginal && `| Cliente: ${docOriginal.cliente} | Lote: `}
+          {docOriginal && (
+            <a href={`/lotes/${docOriginal.lote}`} style={{ color: '#2f81f7', textDecoration: 'none' }}>
+              {docOriginal.lote}
+            </a>
+          )}
         </div>
         
         <div className="nav-buttons">
@@ -57,7 +64,7 @@ export const DocumentViewer: React.FC = () => {
       </div>
 
       <div className="visor-content">
-        <PDFViewer url={documentoSeleccionado.pdfUrl} />
+        <PDFViewer url={(documentoSeleccionado as any).data?.pdfUrl || documentoSeleccionado.pdfUrl || ''} />
         <ExtractedDataPanel />
       </div>
 

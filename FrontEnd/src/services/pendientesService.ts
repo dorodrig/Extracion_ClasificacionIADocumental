@@ -6,6 +6,7 @@ export interface PendingDocument {
   cliente: string;
   motivoRechazo: string;
   enColaDesde: string; // ISO String
+  lote: string;
 }
 
 export interface ExtractedField {
@@ -21,6 +22,8 @@ export interface DocumentViewerData {
   id: string;
   pdfUrl: string;
   campos: ExtractedField[];
+  motivoRechazo: string;
+  lote: string;
 }
 
 const API_BASE_URL = '/api/v1'; // Configurar según base URL
@@ -28,12 +31,12 @@ const API_BASE_URL = '/api/v1'; // Configurar según base URL
 export const pendientesService = {
   getListaPendientes: async (): Promise<PendingDocument[]> => {
     const response = await axios.get(`${API_BASE_URL}/pendientes`);
-    return response.data;
+    return response.data.data || response.data;
   },
 
   getVisorDatos: async (id: string): Promise<DocumentViewerData> => {
     const response = await axios.get(`${API_BASE_URL}/pendientes/${id}/visor`);
-    return response.data;
+    return response.data.data || response.data;
   },
 
   corregirDocumento: async (id: string, camposCorregidos: Record<string, string>) => {
