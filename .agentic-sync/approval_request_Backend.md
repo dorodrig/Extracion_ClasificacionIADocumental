@@ -1,30 +1,31 @@
 # Solicitud de Aprobación - Backend HU-02
 
-**Para:** Arquitecto Líder
-**De:** Agente Backend
-**Fecha:** 2026-05-23
-**Rama:** `HU2_CA1-CA4_DevDamian_ITEREACION1`
-
 ## Resumen del plan propuesto
-Implementación del endpoint REST `POST /api/v1/batches` para la creación inicial de lotes de procesamiento, ya sea mediante Escáner o Carpeta Local (CA-01 a CA-04 de HU-02). Se incluye el schema de base de datos (`lotes_procesamiento`), modelos Pydantic, capa de servicio, y capa API REST bajo Clean Architecture y la Gobernanza.
+Se implementarán los Criterios de Aceptación 05, 06, 07 y 08 para el backend correspondientes a la HU-02. Esto incluye la validación de extensiones permitidas, la creación de los adaptadores y puertos correspondientes para interactuar con el file system y segmentar PDFs, la orquestación en `ingestion_service.py` y la exposición de los endpoints REST `/prepare` y `/status`.
 
-## Archivos que se crearán/modificarán
-- `BackEnd/app/db/models/batches.py` [NEW]
-- `BackEnd/app/schemas/batches.py` [NEW]
-- `BackEnd/app/domain/models/batch.py` [NEW]
-- `BackEnd/app/services/batch_service.py` [NEW]
-- `BackEnd/app/api/v1/endpoints/batches.py` [NEW]
-- `BackEnd/app/api/v1/router.py` [MODIFY]
+## Archivos que planeo crear/modificar
+- **Nuevos:**
+  - `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\BackEnd\app\domain\rules\document_rules.py`
+  - `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\BackEnd\app\domain\ports\pdf_splitter_port.py`
+  - `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\BackEnd\app\domain\ports\storage_port.py`
+  - `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\BackEnd\app\services\storage\local_storage.py`
+  - `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\BackEnd\app\services\storage\pdf_splitter.py`
+  - `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\BackEnd\app\services\ingestion_service.py`
+- **Modificados:**
+  - `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\BackEnd\requirements.txt`
+  - `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\BackEnd\app\core\config.py`
+  - `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\BackEnd\app\core\exceptions.py`
+  - `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\BackEnd\app\domain\ports\batch_repository.py`
+  - `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\BackEnd\app\db\repositories\batch_repository.py`
+  - `C:\zproyecto\extraccion\Extracion_ClasificacionIADocumental\BackEnd\app\api\v1\endpoints\batches.py`
 
-## Decisiones técnicas clave
-- Se usará el wrapper `APIResponse` exigido por Gobernanza §3.2.
-- Validación restrictiva de `modo_ingesta` ("scanner" o "carpeta") usando Enum/Pydantic Validators.
-- El `batch_id` (UUID) se generará a nivel servicio al registrar el lote, estado inicial "preparando".
-- Se protegerá el endpoint con dependencias RBAC (roles admitidos: `admin`, `operario`).
+## Decisiones técnicas clave tomadas
+- Se actualizará `config.py` para incluir `temp_dir` e inyectar la variable de entorno `TEMP_DIR`.
+- En `pdf_splitter.py` se utilizará `pypdf` para fragmentar los PDFs de manera secuencial.
+- Se crearán las excepciones `InvalidDocumentFormatException`, `PDFSplittingException`, `StorageException` en la capa centralizada según Gobernanza.
+
+## Riesgos identificados
+- Falta de configuración local de `TEMP_DIR` en `.env` (se mitigará usando validación si hace falta, aunque `pydantic-settings` lo exigirá).
 
 ## Preguntas para el Arquitecto
-1. ¿Asumimos que el esquema de BD base (por HU-10) ya incluye las tablas relacionadas como `reglas_trabajo` y `clientes` para las Foreign Keys, o debo crear mocks transitorios?
-2. La ruta temporal especifica el formato `/temp/{batch_id}/{timestamp}/`. ¿El backend local debe crear efectivamente esta carpeta en disco en el endpoint POST, o solo generará el registro del path para que un paso posterior la cree (CA-07)? (Por defecto asumiré solo el guardado de la ruta esperada).
-
-## Riesgos Identificados
-- Dependencia de Foreign Keys (`regla_id`, `cliente_id`, `operario_id`). Si no existen los registros previos, podría haber fallos de integridad referencial durante las pruebas manuales locales.
+Ninguna. Todo claro en base al documento handoff.

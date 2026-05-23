@@ -28,3 +28,20 @@ class BatchResponse(BaseModel):
     
     class Config:
         from_attributes = True
+
+class DocumentoIngestado(BaseModel):
+    nombre_archivo: str
+    extension: str
+    ruta_original: str
+    total_paginas: Optional[int] = None
+
+class BatchPrepareRequest(BaseModel):
+    documentos: list[DocumentoIngestado]
+
+class BatchStatusResponse(BaseModel):
+    batch_id: str
+    estado: str
+    documentos_preparados: int
+    total_documentos: int
+    ruta_temporal: Optional[str] = None
+    archivos_omitidos: list[str] = []

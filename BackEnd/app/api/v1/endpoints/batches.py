@@ -79,3 +79,83 @@ async def create_batch(
                 message="No se pudo crear el lote de procesamiento.",
             ).model_dump(),
         )
+
+from app.schemas.batches import BatchPrepareRequest, BatchStatusResponse
+from app.services.ingestion_service import IngestionService
+from app.services.storage.local_storage import LocalStorageAdapter
+from app.services.storage.pdf_splitter import PyPDFSplitterAdapter
+
+@router.post(
+    "/{batch_id}/prepare",
+    response_model=APIResponse[BatchStatusResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Preparar lote para ingesta",
+)
+async def prepare_batch(
+    batch_id: str,
+    request: BatchPrepareRequest,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role(["admin", "operario"])),
+) -> JSONResponse:
+    repo = BatchRepository(db)
+    storage = LocalStorageAdapter()
+    pdf_splitter = PyPDFSplitterAdapter()
+    service = IngestionService(repo, storage, pdf_splitter)
+    
+    try:
+        response_data = service.prepare_batch(batch_id, request)
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=APIResponse(
+                success=True,
+                data=response_data.model_dump(mode="json"),
+                message="Preparación completada"
+            ).model_dump()
+        )
+    except Exception as exc:
+        logger.error("Error al preparar lote: %s", exc)
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content=APIResponse(
+                success=False,
+                error=str(exc),
+                message="Error en preparación"
+            ).model_dump()
+        )
+
+@router.get(
+    "/{batch_id}/status",
+    response_model=APIResponse[BatchStatusResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Consultar estado del lote",
+)
+async def get_batch_status(
+    batch_id: str,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role(["admin", "operario"])),
+) -> JSONResponse:
+    repo = BatchRepository(db)
+    storage = LocalStorageAdapter()
+    pdf_splitter = PyPDFSplitterAdapter()
+    service = IngestionService(repo, storage, pdf_splitter)
+    
+    try:
+        response_data = service.get_batch_status(batch_id)
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=APIResponse(
+                success=True,
+                data=response_data.model_dump(mode="json"),
+                message="Estado obtenido"
+            ).model_dump()
+        )
+    except Exception as exc:
+        logger.error("Error al obtener estado: %s", exc)
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=APIResponse(
+                success=False,
+                error=str(exc),
+                message="Error al consultar estado"
+            ).model_dump()
+        )

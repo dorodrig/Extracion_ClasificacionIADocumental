@@ -4,3 +4,12 @@ class GRMException(Exception):
 
 class BatchCreationException(GRMException):
     pass
+
+class InvalidDocumentFormatException(GRMException):
+    pass
+
+class PDFSplittingException(GRMException):
+    pass
+
+class StorageException(GRMException):
+    pass

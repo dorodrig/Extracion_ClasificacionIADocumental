@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     # App
     app_name: str = "GRM — Gestión y Clasificación Documental con IA"
     debug: bool = False
+    temp_dir: str = "./temp"
 
     class Config:
         env_file = ".env"
