@@ -60,7 +60,7 @@ async def correccion_directa(
     Guarda una corrección directa de campos realizada por el operario.
     """
     service = PendientesService(db)
-    success = await service.corregir_documento(pendiente_id, request)
+    success = await service.corregir_documento(pendiente_id, current_user.id, request)
     if not success:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Documento pendiente no encontrado.")
     return APIResponse(success=True, data=True, message="Corrección guardada exitosamente.")
@@ -77,7 +77,7 @@ async def enviar_instruccion(
     Envía una instrucción al Agente de Clasificación para reprocesar el documento.
     """
     service = PendientesService(db)
-    success = await service.enviar_instruccion(pendiente_id, request)
+    success = await service.enviar_instruccion(pendiente_id, current_user.id, request)
     if not success:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Documento pendiente no encontrado.")
     return APIResponse(success=True, data=True, message="Instrucción enviada exitosamente.")
@@ -94,7 +94,7 @@ async def descartar_documento(
     Descarta un documento pendiente con un motivo especificado.
     """
     service = PendientesService(db)
-    success = await service.descartar_documento(pendiente_id, request)
+    success = await service.descartar_documento(pendiente_id, current_user.id, request)
     if not success:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Documento pendiente no encontrado.")
     return APIResponse(success=True, data=True, message="Documento descartado exitosamente.")

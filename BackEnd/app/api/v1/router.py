@@ -8,6 +8,7 @@ from app.api.v1.endpoints import batches
 from app.api.v1.endpoints import pendientes
 from app.api.v1.endpoints import auth
 from app.api.v1.endpoints import usuarios
+from app.api.v1.endpoints import auditoria
 api_v1_router = APIRouter()
 
 # HU-02 — Ingesta Dual de Documentos (Escáner / Carpeta Local)
@@ -29,4 +30,11 @@ api_v1_router.include_router(
     pendientes.router,
     prefix="/pendientes",
     tags=["pendientes"],
+)
+
+# HU-09 — Trazabilidad, Auditoría y Log de Procesos
+api_v1_router.include_router(
+    auditoria.router,
+    prefix="/auditoria",
+    tags=["auditoria"],
 )
