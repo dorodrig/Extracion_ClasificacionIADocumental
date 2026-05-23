@@ -119,14 +119,21 @@ export const RuleForm: React.FC<RuleFormProps> = ({
 
   // --- Mutations ---
   const createMutation = useMutation({
-    mutationFn: (data: RuleFormData) =>
-      createRule({ ...data, cliente_id: clienteId }),
+    mutationFn: (data: RuleFormData) => {
+      const cleanCampos = data.campos_extraer.map(c => ({
+        nombre: c.nombre,
+        tipo: c.tipo,
+        obligatorio: Boolean(c.obligatorio)
+      }));
+      return createRule({ ...data, campos_extraer: cleanCampos, cliente_id: Number(clienteId) });
+    },
     onSuccess: () => {
       toast.success('✓ Regla guardada exitosamente');
       queryClient.invalidateQueries({ queryKey: ['rules', clienteId] });
       onSaved();
     },
     onError: (error: any) => {
+      console.error('API Error:', error.response?.data);
       if (error?.response?.status === 409 || error.message.toLowerCase().includes('ya existe')) {
         setError('nombre', { type: 'manual', message: 'El nombre de la regla ya existe para este cliente' });
       } else {
@@ -136,8 +143,14 @@ export const RuleForm: React.FC<RuleFormProps> = ({
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data: RuleFormData) =>
-      updateRule(editingRule!.id, data),
+    mutationFn: (data: RuleFormData) => {
+      const cleanCampos = data.campos_extraer.map(c => ({
+        nombre: c.nombre,
+        tipo: c.tipo,
+        obligatorio: Boolean(c.obligatorio)
+      }));
+      return updateRule(editingRule!.id, { ...data, campos_extraer: cleanCampos });
+    },
     onSuccess: () => {
       toast.success('✓ Regla actualizada exitosamente');
       queryClient.invalidateQueries({ queryKey: ['rules', clienteId] });
