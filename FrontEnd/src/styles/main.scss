@@ -1,0 +1,15 @@
+// =============================================================================
+// GRM Design System — Main Entry Point
+// Gobernanza §4.7 — Solo importaciones, CERO estilos directos aquí.
+// =============================================================================
+
+// Abstracts (Design Tokens)
+@use 'abstracts/variables';
+@use 'abstracts/functions';
+@use 'abstracts/mixins';
+
+// Base (Reset + Tipografía)
+@use 'base/base';
+
+// Layouts (Header, Sidebar)
+@use 'layouts/layout';

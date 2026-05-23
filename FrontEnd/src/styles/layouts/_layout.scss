@@ -1,0 +1,228 @@
+// =============================================================================
+// GRM Design System — Layout Styles (Header, Sidebar, Breadcrumb)
+// =============================================================================
+
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+// -----------------------------------------------------------------------------
+// APP LAYOUT
+// -----------------------------------------------------------------------------
+
+.grm-app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+// -----------------------------------------------------------------------------
+// SIDEBAR
+// -----------------------------------------------------------------------------
+
+.grm-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: $sidebar-width;
+  height: 100vh;
+  background-color: $color-bg-sidebar;
+  border-right: $border-width-base solid $color-border;
+  display: flex;
+  flex-direction: column;
+  z-index: $z-sidebar;
+  @include custom-scrollbar;
+  overflow-y: auto;
+
+  &__logo {
+    @include flex-start;
+    gap: $spacing-3;
+    padding: $spacing-4 $spacing-4;
+    border-bottom: $border-width-base solid $color-border;
+    height: $header-height;
+
+    &-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, $color-accent-primary, $color-accent-success);
+      border-radius: $border-radius-base;
+      @include flex-center;
+      color: white;
+      font-weight: $font-weight-bold;
+      font-size: $font-size-sm;
+    }
+
+    &-text {
+      font-size: $font-size-base;
+      font-weight: $font-weight-bold;
+      color: $color-text-primary;
+
+      span {
+        color: $color-text-secondary;
+        font-weight: $font-weight-regular;
+        font-size: $font-size-xs;
+        display: block;
+      }
+    }
+  }
+
+  &__user {
+    padding: $spacing-4;
+    border-bottom: $border-width-base solid $color-border;
+
+    &-name {
+      font-size: $font-size-base;
+      font-weight: $font-weight-semibold;
+      color: $color-text-primary;
+    }
+
+    &-role {
+      font-size: $font-size-xs;
+      color: $color-text-secondary;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  &__nav {
+    padding: $spacing-3 $spacing-2;
+    flex: 1;
+  }
+
+  &__nav-item {
+    @include flex-start;
+    gap: $spacing-3;
+    width: 100%;
+    padding: $spacing-2 $spacing-3;
+    border-radius: $border-radius-base;
+    color: $color-text-secondary;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    transition: all $transition-fast;
+    margin-bottom: $spacing-1;
+    position: relative;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: $color-text-primary;
+    }
+
+    &--active {
+      background-color: rgba($color-accent-primary, 0.12);
+      color: $color-accent-primary;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 60%;
+        background-color: $color-accent-primary;
+        border-radius: 0 $border-radius-sm $border-radius-sm 0;
+      }
+    }
+
+    &-icon {
+      width: 20px;
+      text-align: center;
+      font-size: $font-size-md;
+      flex-shrink: 0;
+    }
+
+    &-badge {
+      margin-left: auto;
+      @include status-badge(rgba($color-accent-error, 0.15), $color-accent-error);
+      font-size: $font-size-xs;
+      min-width: 20px;
+      justify-content: center;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// HEADER
+// -----------------------------------------------------------------------------
+
+.grm-header {
+  position: fixed;
+  top: 0;
+  left: $sidebar-width;
+  right: 0;
+  height: $header-height;
+  background-color: $color-bg-header;
+  border-bottom: $border-width-base solid $color-border;
+  @include flex-between;
+  padding: 0 $spacing-6;
+  z-index: $z-header;
+
+  &__left {
+    @include flex-start;
+    gap: $spacing-4;
+  }
+
+  &__info {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+
+    strong {
+      color: $color-text-primary;
+    }
+  }
+
+  &__right {
+    @include flex-start;
+    gap: $spacing-3;
+  }
+
+  &__btn {
+    @include button-outline;
+    font-size: $font-size-sm;
+    padding: $spacing-1 $spacing-3;
+  }
+
+  &__btn--logout {
+    color: $color-accent-error;
+    border-color: rgba($color-accent-error, 0.3);
+
+    &:hover {
+      background-color: rgba($color-accent-error, 0.1);
+      border-color: $color-accent-error;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// MAIN CONTENT
+// -----------------------------------------------------------------------------
+
+.grm-main {
+  margin-left: $sidebar-width;
+  margin-top: $header-height;
+  padding: $spacing-6;
+  min-height: calc(100vh - #{$header-height});
+  flex: 1;
+  width: calc(100% - #{$sidebar-width});
+}
+
+// -----------------------------------------------------------------------------
+// BREADCRUMB
+// -----------------------------------------------------------------------------
+
+.grm-breadcrumb {
+  @include flex-start;
+  gap: $spacing-2;
+  margin-bottom: $spacing-6;
+  font-size: $font-size-sm;
+
+  &__item {
+    color: $color-text-secondary;
+
+    &--active {
+      color: $color-text-primary;
+    }
+  }
+
+  &__separator {
+    color: $color-text-muted;
+  }
+}

@@ -1,0 +1,14 @@
+// =============================================================================
+// GRM Design System — Funciones SCSS
+// Gobernanza §4.7
+// =============================================================================
+
+// Función para convertir px a rem
+@function rem($px) {
+  @return calc($px / 16) * 1rem;
+}
+
+// Función para opacidad de colores
+@function alpha($color, $opacity) {
+  @return rgba($color, $opacity);
+}

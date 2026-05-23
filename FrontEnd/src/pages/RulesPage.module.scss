@@ -1,0 +1,203 @@
+// =============================================================================
+// RulesPage — Estilos (Página principal CA-01 a CA-06)
+// Gobernanza §4.7 — CSS Modules, tokens, BEM con grm-
+// =============================================================================
+
+@use '../styles/abstracts/variables' as *;
+@use '../styles/abstracts/mixins' as *;
+
+.grm-rules-page {
+  max-width: $content-max-width;
+  margin: 0 auto;
+
+  // --- Page Header ---
+  &__header {
+    @include flex-between;
+    margin-bottom: $spacing-6;
+  }
+
+  &__title {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+    margin-bottom: $spacing-1;
+  }
+
+  &__subtitle {
+    font-size: $font-size-base;
+    color: $color-text-secondary;
+  }
+
+  &__new-btn {
+    @include button-primary;
+    font-size: $font-size-base;
+    padding: $spacing-2 $spacing-5;
+    white-space: nowrap;
+  }
+
+  // --- Loading State ---
+  &__loading {
+    @include flex-center;
+    flex-direction: column;
+    gap: $spacing-4;
+    padding: $spacing-16 0;
+    color: $color-text-secondary;
+
+    .grm-spinner {
+      width: 32px;
+      height: 32px;
+      border-width: 3px;
+    }
+  }
+
+  // --- Error State ---
+  &__error {
+    @include flex-center;
+    flex-direction: column;
+    gap: $spacing-3;
+    padding: $spacing-12 0;
+    text-align: center;
+
+    h3 {
+      color: $color-accent-error;
+      font-size: $font-size-xl;
+    }
+
+    p {
+      color: $color-text-secondary;
+      max-width: 500px;
+    }
+  }
+
+  &__error-icon {
+    font-size: 48px;
+    margin-bottom: $spacing-3;
+  }
+
+  &__error-hint {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+
+    code {
+      padding: $spacing-1 $spacing-2;
+      background-color: $color-bg-card;
+      border-radius: $border-radius-sm;
+      font-family: $font-family-mono;
+      font-size: $font-size-sm;
+    }
+  }
+
+  // --- Empty State (CA-01) ---
+  &__empty-state {
+    @include flex-center;
+    flex-direction: column;
+    gap: $spacing-4;
+    padding: $spacing-12 0;
+    text-align: center;
+    @include fade-in;
+  }
+
+  &__empty-icon {
+    margin-bottom: $spacing-4;
+    opacity: 0.6;
+  }
+
+  &__empty-title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $color-text-secondary;
+  }
+
+  &__empty-description {
+    font-size: $font-size-base;
+    color: $color-text-muted;
+    max-width: 400px;
+  }
+
+  &__empty-btn {
+    @include button-primary;
+    padding: $spacing-3 $spacing-8;
+    font-size: $font-size-md;
+    margin-top: $spacing-4;
+    min-width: 280px;
+    justify-content: center;
+
+    &:hover {
+      box-shadow: $shadow-glow-primary;
+      transform: translateY(-1px);
+    }
+  }
+
+  // --- Info Banner (CA-01) ---
+  &__info-banner {
+    @include flex-start;
+    gap: $spacing-3;
+    padding: $spacing-3 $spacing-4;
+    margin-bottom: $spacing-4;
+    background-color: rgba($color-accent-primary, 0.08);
+    border: $border-width-base solid rgba($color-accent-primary, 0.2);
+    border-radius: $border-radius-md;
+    color: $color-accent-primary;
+    font-size: $font-size-base;
+    @include fade-slide-in;
+  }
+
+  &__info-icon {
+    font-size: $font-size-lg;
+  }
+
+  // --- Bottom Info Cards ---
+  &__bottom-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-4;
+    margin-top: $spacing-8;
+  }
+
+  &__info-card {
+    @include card-base;
+    transition: transform $transition-fast, box-shadow $transition-fast;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+    }
+
+    p {
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
+      line-height: $line-height-relaxed;
+      margin-bottom: $spacing-3;
+
+      strong {
+        color: $color-text-primary;
+      }
+    }
+  }
+
+  &__info-card-header {
+    @include flex-start;
+    gap: $spacing-3;
+    margin-bottom: $spacing-3;
+
+    h4 {
+      font-size: $font-size-md;
+      font-weight: $font-weight-semibold;
+    }
+  }
+
+  &__info-card-icon {
+    font-size: $font-size-2xl;
+  }
+
+  &__info-card-link {
+    @include button-ghost;
+    color: $color-accent-primary;
+    font-size: $font-size-sm;
+    padding: 0;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

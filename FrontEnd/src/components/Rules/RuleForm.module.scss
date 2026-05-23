@@ -1,0 +1,293 @@
+// =============================================================================
+// RuleForm — Estilos (CA-01, CA-03, CA-04, CA-05)
+// Gobernanza §4.7 — CSS Modules, tokens, BEM con grm-
+// =============================================================================
+
+@use '../../styles/abstracts/variables' as *;
+@use '../../styles/abstracts/mixins' as *;
+
+.grm-rule-form {
+  @include card-base;
+  @include fade-slide-in($transition-slow);
+  max-width: 900px;
+  margin: 0 auto;
+
+  &__header {
+    @include flex-start;
+    gap: $spacing-3;
+    margin-bottom: $spacing-6;
+    padding-bottom: $spacing-4;
+    border-bottom: $border-width-base solid $color-border;
+
+    h3 {
+      font-size: $font-size-xl;
+      font-weight: $font-weight-semibold;
+    }
+  }
+
+  &__version-badge {
+    @include status-badge($color-badge-version-bg, $color-badge-version-text);
+    font-size: $font-size-xs;
+  }
+
+  // --- Secciones ---
+  &__section {
+    margin-bottom: $spacing-6;
+    padding-bottom: $spacing-6;
+    border-bottom: $border-width-base solid rgba($color-border, 0.5);
+
+    &:last-of-type {
+      border-bottom: none;
+      margin-bottom: $spacing-4;
+    }
+  }
+
+  &__section-title {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    margin-bottom: $spacing-4;
+    @include flex-start;
+    gap: $spacing-1;
+  }
+
+  // --- Campos de formulario ---
+  &__field {
+    margin-bottom: $spacing-4;
+  }
+
+  &__label {
+    display: block;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-secondary;
+    margin-bottom: $spacing-2;
+  }
+
+  &__required {
+    color: $color-accent-error;
+  }
+
+  &__input {
+    @include input-base;
+
+    &--error {
+      border-color: $color-accent-error;
+
+      &:focus {
+        border-color: $color-accent-error;
+        box-shadow: 0 0 8px rgba($color-accent-error, 0.3);
+      }
+    }
+
+    &--mono {
+      font-family: $font-family-mono;
+      font-size: $font-size-sm;
+    }
+  }
+
+  &__select {
+    @include input-base;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b949e' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right $spacing-3 center;
+    padding-right: $spacing-10;
+
+    &--error {
+      border-color: $color-accent-error;
+    }
+  }
+
+  &__select-with-custom {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-2;
+  }
+
+  &__error {
+    font-size: $font-size-sm;
+    color: $color-accent-error;
+    margin-top: $spacing-1;
+    @include flex-start;
+    gap: $spacing-1;
+  }
+
+  // --- Radio buttons ---
+  &__radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+  }
+
+  &__radio {
+    @include flex-start;
+    gap: $spacing-3;
+    cursor: pointer;
+    padding: $spacing-3 $spacing-4;
+    border: $border-width-base solid $color-border;
+    border-radius: $border-radius-base;
+    transition: all $transition-fast;
+
+    &:hover {
+      border-color: $color-accent-primary;
+      background-color: rgba($color-accent-primary, 0.05);
+    }
+
+    input[type='radio'] {
+      display: none;
+
+      &:checked + .grm-rule-form__radio-indicator {
+        border-color: $color-accent-primary;
+        background-color: $color-accent-primary;
+
+        &::after {
+          content: '';
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-color: white;
+        }
+      }
+
+      &:checked ~ .grm-rule-form__radio-label {
+        color: $color-text-primary;
+      }
+    }
+  }
+
+  &__radio-indicator {
+    width: 20px;
+    height: 20px;
+    border: $border-width-thick solid $color-border;
+    border-radius: 50%;
+    @include flex-center;
+    transition: all $transition-fast;
+    flex-shrink: 0;
+  }
+
+  &__radio-label {
+    font-size: $font-size-base;
+    color: $color-text-secondary;
+    transition: color $transition-fast;
+  }
+
+  // --- Chips (variables del patrón) ---
+  &__chips {
+    @include flex-start;
+    gap: $spacing-2;
+    flex-wrap: wrap;
+    margin-bottom: $spacing-4;
+  }
+
+  &__chips-label {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+
+  &__chip {
+    @include button-base;
+    font-family: $font-family-mono;
+    font-size: $font-size-xs;
+    padding: $spacing-1 $spacing-2;
+    background-color: $color-badge-bg;
+    color: $color-badge-text;
+    border-radius: $border-radius-sm;
+
+    &:hover {
+      background-color: rgba($color-accent-primary, 0.25);
+      transform: translateY(-1px);
+    }
+  }
+
+  // --- Preview ---
+  &__preview {
+    margin-top: $spacing-3;
+    padding: $spacing-3 $spacing-4;
+    background-color: rgba($color-bg-input, 0.5);
+    border: $border-width-base solid $color-border;
+    border-radius: $border-radius-base;
+  }
+
+  &__preview-label {
+    display: block;
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+    margin-bottom: $spacing-1;
+  }
+
+  &__preview-path {
+    font-family: $font-family-mono;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+
+  // --- OCR Config ---
+  &__ocr-config {
+    @include flex-start;
+    gap: $spacing-3;
+    margin-bottom: $spacing-3;
+  }
+
+  &__ocr-label {
+    font-size: $font-size-base;
+    color: $color-text-secondary;
+    white-space: nowrap;
+  }
+
+  &__ocr-bar {
+    flex: 1;
+    height: 8px;
+    background-color: $color-border;
+    border-radius: $border-radius-full;
+    overflow: hidden;
+  }
+
+  &__ocr-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, $color-accent-primary, $color-accent-success);
+    border-radius: $border-radius-full;
+    transition: width $transition-slow;
+  }
+
+  &__ocr-value {
+    font-size: $font-size-md;
+    font-weight: $font-weight-bold;
+    color: $color-accent-success;
+    min-width: 40px;
+  }
+
+  &__ocr-info {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    font-style: italic;
+    padding: $spacing-2 $spacing-3;
+    background-color: rgba($color-accent-primary, 0.05);
+    border-radius: $border-radius-base;
+    border-left: 3px solid $color-accent-primary;
+  }
+
+  // --- Action Buttons ---
+  &__actions {
+    @include flex-between;
+    padding-top: $spacing-6;
+    border-top: $border-width-base solid $color-border;
+    margin-top: $spacing-4;
+  }
+
+  &__btn-cancel {
+    @include button-outline;
+  }
+
+  &__btn-submit {
+    @include button-primary;
+    padding: $spacing-3 $spacing-8;
+    font-size: $font-size-base;
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+}

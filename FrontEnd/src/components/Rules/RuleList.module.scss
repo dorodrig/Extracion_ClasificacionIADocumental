@@ -1,0 +1,369 @@
+// =============================================================================
+// RuleList — Estilos (CA-02 — Tabla + Drawer)
+// Gobernanza §4.7 — CSS Modules, tokens, BEM con grm-
+// =============================================================================
+
+@use '../../styles/abstracts/variables' as *;
+@use '../../styles/abstracts/mixins' as *;
+
+// -----------------------------------------------------------------------------
+// STATS CARDS
+// -----------------------------------------------------------------------------
+
+.grm-rule-list {
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-4;
+    margin-bottom: $spacing-6;
+  }
+
+  &__stat-card {
+    @include card-base;
+    @include flex-start;
+    gap: $spacing-4;
+    padding: $spacing-4 $spacing-5;
+    transition: transform $transition-fast, box-shadow $transition-fast;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+    }
+  }
+
+  &__stat-icon {
+    font-size: $font-size-2xl;
+    width: 48px;
+    height: 48px;
+    @include flex-center;
+    background-color: rgba($color-accent-primary, 0.1);
+    border-radius: $border-radius-md;
+  }
+
+  &__stat-content {
+    @include flex-column;
+  }
+
+  &__stat-label {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__stat-value {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+  }
+
+  // ---------------------------------------------------------------------------
+  // TABLE
+  // ---------------------------------------------------------------------------
+
+  &__table-container {
+    border: $border-width-base solid $color-border;
+    border-radius: $border-radius-md;
+    overflow: hidden;
+    margin-bottom: $spacing-4;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+      tr {
+        background-color: $color-bg-table-row-even;
+        border-bottom: $border-width-base solid $color-border;
+      }
+
+      th {
+        padding: $spacing-3 $spacing-4;
+        text-align: left;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-semibold;
+        color: $color-text-secondary;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: $border-width-base solid rgba($color-border, 0.5);
+        transition: background-color $transition-fast;
+
+        &:nth-child(odd) {
+          background-color: $color-bg-table-row-odd;
+        }
+
+        &:nth-child(even) {
+          background-color: $color-bg-table-row-even;
+        }
+
+        &:hover {
+          background-color: $color-bg-table-hover;
+        }
+
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+
+      td {
+        padding: $spacing-3 $spacing-4;
+        font-size: $font-size-base;
+        color: $color-text-primary;
+        vertical-align: middle;
+      }
+    }
+  }
+
+  // --- Cell layouts ---
+  &__name-cell {
+    @include flex-start;
+    gap: $spacing-2;
+  }
+
+  &__rule-name {
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  &__version-badge {
+    @include status-badge($color-badge-version-bg, $color-badge-version-text);
+    font-size: $font-size-xs;
+  }
+
+  &__mode-badge {
+    @include flex-start;
+    gap: $spacing-1;
+    padding: $spacing-1 $spacing-2;
+    border-radius: $border-radius-full;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+
+    &--scanner {
+      background-color: $color-status-scanner-bg;
+      color: $color-status-scanner-text;
+    }
+
+    &--carpeta {
+      background-color: $color-status-carpeta-bg;
+      color: $color-status-carpeta-text;
+    }
+  }
+
+  // --- Actions ---
+  &__actions {
+    @include flex-start;
+    gap: $spacing-2;
+  }
+
+  &__btn-process {
+    @include button-success;
+    font-size: $font-size-sm;
+    padding: $spacing-1 $spacing-3;
+  }
+
+  &__btn-edit {
+    @include button-outline;
+    font-size: $font-size-sm;
+    padding: $spacing-1 $spacing-3;
+  }
+
+  &__btn-detail {
+    @include button-ghost;
+    font-size: $font-size-md;
+  }
+
+  // ---------------------------------------------------------------------------
+  // PAGINATION
+  // ---------------------------------------------------------------------------
+
+  &__pagination {
+    @include flex-between;
+    padding: $spacing-3 0;
+  }
+
+  &__pagination-info {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+
+  &__pagination-controls {
+    @include flex-start;
+    gap: $spacing-1;
+  }
+
+  &__pagination-btn {
+    @include button-ghost;
+    font-size: $font-size-sm;
+    padding: $spacing-1 $spacing-3;
+    border-radius: $border-radius-base;
+    min-width: 36px;
+    justify-content: center;
+
+    &--active {
+      background-color: $color-accent-primary;
+      color: $color-text-primary;
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// DRAWER (Detail Panel)
+// -----------------------------------------------------------------------------
+
+.grm-drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: $color-overlay;
+  z-index: $z-drawer - 1;
+  @include fade-in($transition-fast);
+}
+
+.grm-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: $drawer-width;
+  height: 100vh;
+  background-color: $color-bg-drawer;
+  border-left: $border-width-base solid $color-border;
+  z-index: $z-drawer;
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight $transition-base ease forwards;
+  @include custom-scrollbar;
+
+  &__header {
+    @include flex-between;
+    padding: $spacing-5 $spacing-6;
+    border-bottom: $border-width-base solid $color-border;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    @include flex-start;
+    gap: $spacing-3;
+
+    h3 {
+      font-size: $font-size-lg;
+      font-weight: $font-weight-semibold;
+    }
+  }
+
+  &__version {
+    @include status-badge($color-badge-version-bg, $color-badge-version-text);
+  }
+
+  &__close {
+    @include button-ghost;
+    font-size: $font-size-lg;
+    width: 32px;
+    height: 32px;
+    border-radius: $border-radius-base;
+
+    &:hover {
+      background-color: rgba($color-accent-error, 0.1);
+      color: $color-accent-error;
+    }
+  }
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: $spacing-6;
+    @include custom-scrollbar;
+  }
+
+  &__field {
+    margin-bottom: $spacing-5;
+  }
+
+  &__label {
+    display: block;
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: $spacing-1;
+  }
+
+  &__value {
+    font-size: $font-size-base;
+    color: $color-text-primary;
+    font-weight: $font-weight-medium;
+  }
+
+  &__value-mono {
+    font-family: $font-family-mono;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    display: block;
+    padding: $spacing-2;
+    background-color: rgba($color-bg-input, 0.5);
+    border-radius: $border-radius-sm;
+    word-break: break-all;
+  }
+
+  &__fields-list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-2;
+    margin-top: $spacing-2;
+  }
+
+  &__field-item {
+    @include flex-start;
+    gap: $spacing-2;
+    padding: $spacing-2 $spacing-3;
+    background-color: rgba($color-bg-input, 0.5);
+    border-radius: $border-radius-sm;
+    border: $border-width-base solid rgba($color-border, 0.5);
+  }
+
+  &__field-name {
+    font-size: $font-size-sm;
+    color: $color-text-primary;
+    font-weight: $font-weight-medium;
+    flex: 1;
+  }
+
+  &__field-type {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    padding: $spacing-1 $spacing-2;
+    background-color: rgba($color-border, 0.3);
+    border-radius: $border-radius-sm;
+  }
+
+  &__field-required {
+    @include status-badge(rgba($color-accent-primary, 0.15), $color-accent-primary);
+    font-size: $font-size-xs;
+  }
+
+  &__footer {
+    padding: $spacing-4 $spacing-6;
+    border-top: $border-width-base solid $color-border;
+    flex-shrink: 0;
+  }
+
+  &__edit-btn {
+    @include button-primary;
+    width: 100%;
+    justify-content: center;
+    padding: $spacing-3;
+  }
+}
