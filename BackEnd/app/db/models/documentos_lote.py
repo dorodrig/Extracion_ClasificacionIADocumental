@@ -8,7 +8,7 @@ class LoteProcesamiento(Base):
     __tablename__ = "lotes_procesamiento"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    batch_id = Column(UNIQUEIDENTIFIER, default=uuid.uuid4, unique=True, index=True)
+    batch_id = Column(UNIQUEIDENTIFIER(as_uuid=True), default=uuid.uuid4, unique=True, index=True)
     regla_id = Column(Integer, ForeignKey("reglas_trabajo.id"), nullable=False)
     cliente_id = Column(Integer, ForeignKey("clientes.id"), nullable=False)
     operario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)

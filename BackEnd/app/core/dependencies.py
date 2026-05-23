@@ -27,6 +27,10 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session 
     Decodifica el JWT y retorna el usuario actual de la base de datos.
     """
     # --- BYPASS DE SEGURIDAD PARA PILOTO ---
+    usuario = db.query(Usuario).first()
+    if usuario:
+        # Retornar un usuario real de la BD para evitar error de FK
+        return usuario
     return MockUser(id=1, cedula="0000000000", nombre="Bypass Admin", rol="admin", cliente_id=1)
     # -----------------------------------------
 
