@@ -53,7 +53,7 @@ class PipelineOrchestratorService:
         # Para la integración actual, pasaremos un documento_id genérico basado en el índice.
         # CA-02 de OCR requiere documento_id. Asumiremos que el lote en sí ya tiene su trazabilidad.
         # Crearemos o usaremos ids de documentos generados.
-        from app.db.models.documento_db import Documento
+        from app.db.models.documentos_lote import DocumentoLote
         
         errores = 0
         procesados = 0
@@ -63,10 +63,10 @@ class PipelineOrchestratorService:
             logger.info(f"Procesando archivo {nombre_archivo} del lote {batch_id}")
             
             # Registrar documento en BD si no existe (simplificado)
-            nuevo_doc = Documento(
+            nuevo_doc = DocumentoLote(
                 lote_id=batch.id,
                 nombre_archivo=nombre_archivo,
-                ruta_almacenamiento=archivo,
+                ruta_temporal=archivo,
                 estado="procesando_ocr"
             )
             self.db.add(nuevo_doc)
@@ -104,8 +104,33 @@ class PipelineOrchestratorService:
                 
                 # 4. Enrutamiento BPMN (Clasificación vs Humano)
                 if resultado_ia.estado == "listo_clasificacion":
-                    nuevo_doc.estado = "clasificado"
-                    # Aquí iría la llamada al ClassificationAgent
+                    from app.services.clasificacion_ia_service import ClasificacionIAService
+                    import json
+                    clasificador = ClasificacionIAService(self.db)
+                    
+                    try:
+                        datos_extraidos = json.loads(resultado_ia.campos_extraidos_json) if resultado_ia.campos_extraidos_json else {}
+                    except:
+                        datos_extraidos = {}
+                    
+                    payload = {
+                        "documento_id": documento_id,
+                        "cliente_id": batch.cliente_id,
+                        "batch_id": str(batch.batch_id),
+                        "regla_id": regla_id,
+                        "datos_extraidos": datos_extraidos.get("campos_extraidos", datos_extraidos),
+                        "texto_ocr": "", # Se podría sacar de la tabla OCR si fuera necesario
+                        "archivo_origen": archivo
+                    }
+                    
+                    res_clasificacion = clasificador.clasificar_documento(payload)
+                    
+                    if res_clasificacion.get("success"):
+                        nuevo_doc.estado = "clasificado"
+                    else:
+                        nuevo_doc.estado = "error_clasificacion"
+                        logger.error(f"Error clasificando doc {documento_id}: {res_clasificacion.get('error')}")
+
                 elif resultado_ia.estado == "pendiente_humano":
                     nuevo_doc.estado = "pendiente_revision"
                 else:
