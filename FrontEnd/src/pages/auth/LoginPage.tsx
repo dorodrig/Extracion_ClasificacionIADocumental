@@ -29,8 +29,14 @@ export const LoginPage = () => {
         password,
       });
       
-      const { access_token } = response.data;
-      const user = response.data.user || {};
+      // Handle APIResponse wrapper if present
+      const responseData = response.data.data ? response.data.data : response.data;
+      const { access_token } = responseData;
+      const user = responseData.user || {};
+      
+      if (!access_token) {
+        throw new Error('No se recibió un token de acceso válido.');
+      }
       
       // Attempt to decode JWT to extract roles if not directly in user object
       let payload: any = {};
@@ -41,7 +47,7 @@ export const LoginPage = () => {
       }
       
       const authUser: any = {
-        id: payload.sub || user.id || '1',
+        id: payload.sub || payload.usuario_id || user.id || '1',
         cedula: cedula,
         role: payload.rol || user.role || payload.role || 'Operario',
         nombre: payload.nombre || user.nombre || 'Usuario',
@@ -49,7 +55,7 @@ export const LoginPage = () => {
       
       login(access_token, authUser);
       
-      if (authUser.role === 'Admin') navigate('/admin/gestion-usuarios');
+      if (authUser.role === 'Admin') navigate('/admin/dashboard');
       else if (authUser.role === 'Operario') navigate('/operario/seleccion-cliente');
       else navigate('/cliente/dashboard');
       
