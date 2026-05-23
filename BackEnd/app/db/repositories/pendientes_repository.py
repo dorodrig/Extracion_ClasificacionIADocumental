@@ -11,30 +11,37 @@ class PendientesRepository:
         self.db = db
 
     def get_pendientes(self, skip: int = 0, limit: int = 100, query: Optional[str] = None, cliente_id: Optional[int] = None):
-        db_query = self.db.query(
-            AgenteContextoResultados, DocumentoLote, LoteProcesamiento
-        ).select_from(
-            AgenteContextoResultados
-        ).join(
-            DocumentoLote, AgenteContextoResultados.documento_id == DocumentoLote.id
-        ).join(
-            LoteProcesamiento, DocumentoLote.lote_id == LoteProcesamiento.id
-        ).filter(AgenteContextoResultados.estado == "pendiente_humano")
-        
-        if cliente_id:
-            db_query = db_query.filter(LoteProcesamiento.cliente_id == cliente_id)
+        # Base query builder — called twice to avoid with_entities mutation
+        def _build_base_query():
+            q = self.db.query(
+                AgenteContextoResultados, DocumentoLote, LoteProcesamiento
+            ).select_from(
+                AgenteContextoResultados
+            ).join(
+                DocumentoLote, AgenteContextoResultados.documento_id == DocumentoLote.id
+            ).join(
+                LoteProcesamiento, DocumentoLote.lote_id == LoteProcesamiento.id
+            ).filter(AgenteContextoResultados.estado == "pendiente_humano")
             
-        if query:
-            db_query = db_query.filter(
-                or_(
-                    LoteProcesamiento.batch_id.cast(String).ilike(f"%{query}%"),
-                    AgenteContextoResultados.motivo_rechazo.ilike(f"%{query}%")
+            if cliente_id:
+                q = q.filter(LoteProcesamiento.cliente_id == cliente_id)
+                
+            if query:
+                q = q.filter(
+                    or_(
+                        LoteProcesamiento.batch_id.cast(String).ilike(f"%{query}%"),
+                        AgenteContextoResultados.motivo_rechazo.ilike(f"%{query}%")
+                    )
                 )
-            )
-            
-        total = db_query.with_entities(sa_func.count(AgenteContextoResultados.id)).scalar()
-        db_query = db_query.order_by(AgenteContextoResultados.id.desc())
-        results = db_query.offset(skip).limit(limit).all()
+            return q
+        
+        # Count total (usa with_entities en copia separada)
+        total = _build_base_query().with_entities(sa_func.count(AgenteContextoResultados.id)).scalar()
+        
+        # Fetch paginated results (query limpio, sin mutar)
+        results = _build_base_query().order_by(
+            AgenteContextoResultados.id.desc()
+        ).offset(skip).limit(limit).all()
         
         items = []
         for res, doc, lote in results:
