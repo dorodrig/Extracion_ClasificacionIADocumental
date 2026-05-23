@@ -8,7 +8,6 @@ class DocumentosLote(Base):
     id = Column(Integer, primary_key=True, index=True)
     nombre_archivo = Column(String(255), nullable=False)
     estado = Column(String(50), default="PENDIENTE")
-    creado_en = Column(DateTime, default=func.now())
     
     # Relación con OcrResultadosPaginas
     paginas = relationship("OcrResultadosPaginas", back_populates="documento", cascade="all, delete-orphan")
