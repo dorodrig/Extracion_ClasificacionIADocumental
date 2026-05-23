@@ -30,7 +30,7 @@
 | HU-03 | CA-01-12 | QA        | ❌ Excluido | handoff_qa_HU03_CA01-CA12.md         | 2026-05-23   |
 | HU-04 | CA-01-12 | Backend   | ✅ Aprobado | handoff_backend_HU04_CA01-CA12.md    | 2026-05-23   |
 | HU-04 | CA-01-12 | QA        | ❌ Excluido | handoff_qa_HU04_CA01-CA12.md         | 2026-05-23   |
-| HU-05 | CA-01-13 | Backend   | 📋 Planificado | handoff_backend_HU05_CA01-CA13.md    | —            |
+| HU-05 | CA-01-13 | Backend   | ✅ Aprobado | handoff_backend_HU05_CA01-CA13.md    | 2026-05-23   |
 | HU-05 | CA-01-13 | QA        | 📋 Planificado | handoff_qa_HU05_HU06.md              | —            |
 | HU-06 | CA-01-12 | Backend   | 📋 Planificado | handoff_backend_HU06_CA01-CA12.md    | —            |
 | HU-06 | CA-01-12 | Frontend  | 📋 Planificado | handoff_frontend_HU06_CA01-CA12.md   | —            |

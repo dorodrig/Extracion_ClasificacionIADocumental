@@ -29,13 +29,16 @@ class ClasificacionIAService:
             cc = datos_extraidos.get("CC")
             nombre = datos_extraidos.get("NOMBRE_COMPLETO")
             tipo = datos_extraidos.get("TIPO_DOCUMENTO")
+            instruccion = payload.get("instruccion_correctiva")
 
-            if not cc or not nombre or not tipo:
-                # Use Gemini to disambiguate
+            if not cc or not nombre or not tipo or instruccion:
+                # Use Gemini to disambiguate or correct
                 prompt = f"""
-                Analiza el siguiente texto de OCR y extrae la información faltante:
+                Analiza el siguiente texto de OCR y extrae la información faltante o corrige según la instrucción.
                 Datos actuales: CC={cc}, NOMBRE={nombre}, TIPO={tipo}
                 Texto OCR: {texto_ocr}
+                Instrucción correctiva del operario: {instruccion if instruccion else 'Ninguna'}
+                
                 Devuelve SOLO un JSON con las claves CC, NOMBRE_COMPLETO, y TIPO_DOCUMENTO.
                 """
                 resp = self.gemini.invoke(prompt)

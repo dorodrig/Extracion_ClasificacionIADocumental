@@ -63,8 +63,26 @@ class PendientesService:
                     detalles={"instruccion": instruccion_data.instruccion}
                 )
             )
-            # Here we would theoretically trigger the AI classification agent queue
-            # with the specific instruction.
+            # Detonar la tarea Celery de clasificación
+            from app.db.models.documentos_lote import DocumentoLote, LoteProcesamiento
+            from app.tasks.clasificacion_tasks import clasificar_documento_task
+            
+            doc_lote = self.db.query(DocumentoLote).filter_by(id=item.documento_id).first()
+            if doc_lote:
+                lote = self.db.query(LoteProcesamiento).filter_by(id=doc_lote.lote_id).first()
+                if lote:
+                    payload = {
+                        "documento_id": item.documento_id,
+                        "cliente_id": item.cliente_id,
+                        "batch_id": item.batch_id,
+                        "regla_id": lote.regla_id,
+                        "datos_extraidos": item.campos_extraidos_json or {},
+                        "texto_ocr": "",
+                        "archivo_origen": doc_lote.ruta_temporal,
+                        "instruccion_correctiva": instruccion_data.instruccion
+                    }
+                    clasificar_documento_task.delay(payload)
+
             await manager.broadcast({
                 "type": "INSTRUCTION_SENT",
                 "documento_id": item.documento_id,

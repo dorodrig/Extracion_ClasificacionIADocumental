@@ -24,16 +24,4 @@ class LogAuditoriaUsuario(Base):
     
     created_at = Column(DateTime, default=func.now(), nullable=False)
 
-class LogIAInvocaciones(Base):
-    __tablename__ = "log_ia_invocaciones"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    documento_id = Column(Integer, ForeignKey("documentos_lote.id", ondelete="SET NULL"), nullable=True, index=True)
-    proveedor = Column(String(50), nullable=False) # Textract, Gemini
-    endpoint_invocado = Column(String(200), nullable=True)
-    payload_enviado = Column(JSON, nullable=True)
-    respuesta_recibida = Column(JSON, nullable=True)
-    tiempo_respuesta_ms = Column(Integer, nullable=True)
-    exitoso = Column(Boolean, nullable=False, default=True)
-
-    created_at = Column(DateTime, default=func.now(), nullable=False)

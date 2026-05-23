@@ -1,26 +1,17 @@
-# db.models package
-from .rule_db import ReglasTrabajo
-# from .documento_db import DocumentosLote # Disabled due to conflict with batches.py
-from .ocr_db import OcrResultadosPaginas
-from .contexto_resultado_db import AgenteContextoResultados
-from .log_ia_invocacion_db import LogIAInvocacion
+# app/db/models/__init__.py
+from app.db.database import Base
 
-from app.db.models.batches import LoteProcesamiento, DocumentoLote  # noqa: F401
+# Modelos principales y tablas de relacion
+from app.db.models.clientes import Cliente
+from app.db.models.usuarios import Usuario, usuario_cliente
+from app.db.models.rule_db import ReglasTrabajo
+from app.db.models.rule_history_db import ReglasTrabajoHistorial
+from app.db.models.documentos_lote import LoteProcesamiento, DocumentoLote
+from app.db.models.ocr_db import OcrResultadosPaginas
+from app.db.models.contexto_resultado_db import AgenteContextoResultados
+from app.db.models.documentos_clasificados import DocumentoClasificado
+from app.db.models.documentos_pendientes import DocumentoPendiente
 
-# HU-07: Modelos necesarios para portal de cliente
-from .documentos_clasificados import DocumentoClasificado  # noqa: F401
-from .documentos_pendientes import DocumentoPendiente  # noqa: F401
-
-# Stubs de auth — TODO(HU-08): Reemplazar con modelos reales
-from .auth_stubs import Cliente, Usuario  # noqa: F401
-"""
-app/db/models/__init__.py
-Importa todos los modelos ORM para que Alembic los detecte automáticamente.
-"""
-from app.db.models.documentos_lote import LoteProcesamiento, DocumentoLote  # noqa: F401
-from app.db.models.usuarios import Usuario, usuario_cliente  # noqa: F401
-from app.db.models.clientes import Cliente  # noqa: F401
-from app.db.models.reglas import ReglaTrabajo  # noqa: F401
-from app.db.models.auditoria import LogProceso, LogAuditoriaUsuario, LogIAInvocaciones  # noqa: F401
-from app.db.models.documentos_clasificados import DocumentoClasificado  # noqa: F401
-from app.db.models.documentos_pendientes import DocumentoPendiente  # noqa: F401
+# Tablas de Log
+from app.db.models.auditoria import LogProceso, LogAuditoriaUsuario
+from app.db.models.log_ia_invocacion_db import LogIAInvocacion
