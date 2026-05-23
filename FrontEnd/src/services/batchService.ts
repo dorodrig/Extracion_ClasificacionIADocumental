@@ -56,7 +56,7 @@ export const batchService = {
       const response = await api.post<APIResponse<BatchStatusResponse>>(`/api/v1/batches/${batchId}/prepare`, data);
       return response.data;
     } catch (error: any) {
-      console.error('Error in prepareBatch', error);
+      console.error('Error in prepareBatch', error.response?.data);
       return { success: false, error: error.message };
     }
   },

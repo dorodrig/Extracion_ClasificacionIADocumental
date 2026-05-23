@@ -6,6 +6,7 @@ import { Trash2, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { IngestionProgress } from './IngestionProgress';
 import { OmittedFilesAlert } from './OmittedFilesAlert';
 import { batchService } from '@/services/batchService';
+import toast from 'react-hot-toast';
 
 interface DocumentListProps {
   mode: 'scanner' | 'carpeta';
@@ -29,10 +30,12 @@ export const DocumentList: React.FC<DocumentListProps> = ({ mode }) => {
   const totalSize = documentsList.reduce((acc, doc) => acc + (doc.selected ? doc.sizeMB : 0), 0);
   const allSelected = documentsList.length > 0 && selectedCount === documentsList.length;
 
+  const [isPreparing, setIsPreparing] = React.useState(false);
+
   const handleConfirmAndSend = async () => {
     if (!activeBatchId) return;
     
-    setBatchStatus('processing');
+    setIsPreparing(true);
     setOmittedFilesBackend([]);
 
     const documentosPayload = documentsList
@@ -44,14 +47,24 @@ export const DocumentList: React.FC<DocumentListProps> = ({ mode }) => {
         total_paginas: d.pages
       }));
 
-    const response = await batchService.prepareBatch(activeBatchId, { documentos: documentosPayload });
-    
-    if (response.success && response.data) {
-      if (response.data.archivos_omitidos && response.data.archivos_omitidos.length > 0) {
-        setOmittedFilesBackend(response.data.archivos_omitidos);
+    try {
+      const response = await batchService.prepareBatch(activeBatchId, { documentos: documentosPayload });
+      
+      setIsPreparing(false);
+      
+      if (response.success && response.data) {
+        setBatchStatus('processing');
+        if (response.data.archivos_omitidos && response.data.archivos_omitidos.length > 0) {
+          setOmittedFilesBackend(response.data.archivos_omitidos);
+        }
+      } else {
+        setBatchStatus('error');
+        toast.error(response.error || 'Error al preparar el lote de procesamiento.');
       }
-    } else {
+    } catch (e: any) {
+      setIsPreparing(false);
       setBatchStatus('error');
+      toast.error('Error al preparar el lote de procesamiento.');
     }
   };
 
@@ -140,10 +153,10 @@ export const DocumentList: React.FC<DocumentListProps> = ({ mode }) => {
         </button>
         <button 
           className={`${dashboardStyles['grm-btn']} ${dashboardStyles['grm-btn--primary']} ${styles['btn-confirm']}`}
-          disabled={selectedCount === 0 || !activeBatchId}
+          disabled={selectedCount === 0 || !activeBatchId || isPreparing}
           onClick={handleConfirmAndSend}
         >
-          ✓ Confirmar y Enviar
+          {isPreparing ? 'Preparando...' : '✓ Confirmar y Enviar'}
         </button>
       </div>
     </div>
