@@ -83,11 +83,13 @@ def validate_patron_carpeta(patron: str, campos: list[dict]) -> None:
         raise InvalidPatronCarpetaException(patron)
 
     nombres_campos = {c["nombre"].strip().lower() for c in campos}
+    variables_globales = {"cc", "nombre_completo", "tipo_documento", "nombre_archivo"}
     
-    # Validar que al menos una variable exista en campos
+    # Validar que al menos una variable exista en campos o sea una variable global
     variable_valida_encontrada = False
     for var in variables:
-        if var.strip().lower() in nombres_campos:
+        var_lower = var.strip().lower()
+        if var_lower in nombres_campos or var_lower in variables_globales:
             variable_valida_encontrada = True
             break
             
