@@ -176,7 +176,6 @@ export const RuleList: React.FC<RuleListProps> = ({ rules, onEdit, onNewRule: _o
                           onClick={() => duplicateMutation.mutate(rule.id)}
                           disabled={duplicateMutation.isPending}
                           type="button"
-                          style={{ margin: '0 4px' }}
                         >
                           📋 Duplicar
                         </button>
