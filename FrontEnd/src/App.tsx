@@ -3,11 +3,16 @@
  * Gobernanza §4.2 — React Router + React Query Provider
  */
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { Layout } from './components/common/Layout';
 import { RulesPage } from './pages/RulesPage';
+import { IntakeDashboard } from '@/components/intake/IntakeDashboard';
+import { PendientesPage } from '@/pages/PendientesPage';
+import { PortalLogin } from '@/components/portal/PortalLogin';
+import { ClientePortalPage } from '@/pages/ClientePortalPage';
+import { AccessDeniedPage } from '@/components/portal/AccessDeniedPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,12 +28,27 @@ const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<RulesPage />} />
-            <Route path="/reglas" element={<RulesPage />} />
-          </Routes>
-        </Layout>
+        <Routes>
+          {/* Portal Cliente routes — outside operario Layout (light theme) */}
+          <Route path="/cliente/login" element={<PortalLogin />} />
+          <Route path="/cliente/acceso-denegado" element={<AccessDeniedPage />} />
+          <Route path="/cliente/*" element={<ClientePortalPage />} />
+
+          {/* Operario routes — inside dark-theme Layout */}
+          <Route
+            path="/*"
+            element={
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Navigate to="/intake" replace />} />
+                  <Route path="/reglas" element={<RulesPage />} />
+                  <Route path="/intake" element={<IntakeDashboard />} />
+                  <Route path="/pendientes" element={<PendientesPage />} />
+                </Routes>
+              </Layout>
+            }
+          />
+        </Routes>
       </BrowserRouter>
 
       {/* Toast Notifications — Gobernanza §6.2 */}
@@ -60,43 +80,5 @@ const App: React.FC = () => {
     </QueryClientProvider>
   );
 };
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { IntakeDashboard } from '@/components/intake/IntakeDashboard';
-import { PendientesPage } from '@/pages/PendientesPage';
-
-function App() {
-  return (
-    <Router>
-      <div className="grm-app">
-        <header className="grm-app__header">
-          <div className="grm-app__logo">GRM</div>
-          <div className="grm-app__user-info">
-            Operario: Juan Pérez | Cliente: BANCORP | <a href="#">[Cambiar]</a> <a href="#">[Salir]</a>
-          </div>
-        </header>
-        <div className="grm-app__body">
-          <aside className="grm-app__sidebar">
-            <nav>
-              <ul>
-                <li>Inicio</li>
-                <li>Reglas</li>
-                <li className="active">Ingresar◄</li>
-                <li>Pendientes</li>
-                <li>Historial</li>
-              </ul>
-            </nav>
-          </aside>
-          <main className="grm-app__content">
-            <Routes>
-              <Route path="/" element={<Navigate to="/intake" replace />} />
-              <Route path="/intake" element={<IntakeDashboard />} />
-              <Route path="/pendientes" element={<PendientesPage />} />
-            </Routes>
-          </main>
-        </div>
-      </div>
-    </Router>
-  );
-}
 
 export default App;

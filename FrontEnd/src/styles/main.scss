@@ -7,14 +7,24 @@
 @use 'abstracts/variables';
 @use 'abstracts/functions';
 @use 'abstracts/mixins';
+@use 'abstracts/portal-variables';
 
 // Base (Reset + Tipografía)
 @use 'base/base';
+@use 'base/reset';
 
 // Layouts (Header, Sidebar)
 @use 'layouts/layout';
-@use 'abstracts/variables';
-@use 'abstracts/mixins';
-@use 'base/reset';
+@use 'layouts/portal-layout';
+
+// Components — Operario
 @use 'components/pendientes';
 @use 'components/visor';
+
+// Components — Portal Cliente (HU-07)
+@use 'components/portal-dashboard';
+@use 'components/portal-explorer';
+@use 'components/portal-documents';
+@use 'components/portal-viewer';
+@use 'components/portal-login';
+@use 'components/portal-errors';

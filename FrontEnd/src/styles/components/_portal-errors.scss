@@ -1,0 +1,128 @@
+// =============================================================================
+// GRM Portal Cliente — Páginas de Error
+// HU-07 — 403, 404, error genérico
+// =============================================================================
+
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+@use '../abstracts/portal-variables' as *;
+
+// -----------------------------------------------------------------------------
+// ERROR PAGE
+// -----------------------------------------------------------------------------
+
+.grm-portal-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - #{$portal-header-height} - #{$spacing-12});
+  text-align: center;
+  padding: $spacing-6;
+  font-family: $portal-font-family;
+
+  &__icon {
+    width: 80px;
+    height: 80px;
+    color: $portal-error-color;
+    margin-bottom: $spacing-6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &__code {
+    font-size: 72px;
+    font-weight: $portal-font-weight-bold;
+    color: $portal-color-header-bg;
+    line-height: 1;
+    margin-bottom: $spacing-4;
+  }
+
+  &__title {
+    font-size: $font-size-3xl;
+    font-weight: $portal-font-weight-bold;
+    color: $portal-color-text;
+    margin: 0 0 $spacing-4 0;
+  }
+
+  &__message {
+    font-size: $font-size-md;
+    color: $portal-color-text-muted;
+    max-width: 400px;
+    margin: 0 auto $spacing-8 auto;
+    line-height: $line-height-relaxed;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-2;
+    background-color: $portal-color-header-bg;
+    color: $portal-color-header-text;
+    border: none;
+    border-radius: $border-radius-md;
+    padding: $spacing-3 $spacing-6;
+    font-size: $font-size-base;
+    font-weight: $portal-font-weight-semibold;
+    font-family: $portal-font-family;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color $portal-transition-fast, transform $portal-transition-fast;
+
+    &:hover {
+      background-color: darken(#1e3a5f, 8%);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+
+  &__links {
+    margin-top: $spacing-6;
+    display: flex;
+    gap: $spacing-4;
+
+    a {
+      color: $portal-color-highlight;
+      font-size: $font-size-base;
+      text-decoration: none;
+      font-weight: $portal-font-weight-medium;
+      transition: color $portal-transition-fast;
+
+      &:hover {
+        text-decoration: underline;
+        color: $portal-color-highlight-hover;
+      }
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// SPECIFIC ERROR VARIANTS
+// -----------------------------------------------------------------------------
+
+.grm-portal-error--403 {
+  .grm-portal-error__icon {
+    color: $portal-color-header-bg;
+  }
+}
+
+.grm-portal-error--404 {
+  .grm-portal-error__icon {
+    color: $portal-color-text-muted;
+  }
+}
+
+.grm-portal-error--500 {
+  .grm-portal-error__icon {
+    color: $portal-error-color;
+  }
+}

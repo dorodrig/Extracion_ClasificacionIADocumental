@@ -1,0 +1,261 @@
+// =============================================================================
+// GRM Portal Cliente — Layout Principal
+// HU-07 — Header, Sidebar, Main content area
+// =============================================================================
+
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+@use '../abstracts/portal-variables' as *;
+
+// -----------------------------------------------------------------------------
+// WRAPPER
+// -----------------------------------------------------------------------------
+
+.grm-portal {
+  min-height: 100vh;
+  background-color: $portal-color-bg;
+  font-family: $portal-font-family;
+  color: $portal-color-text;
+}
+
+// -----------------------------------------------------------------------------
+// HEADER
+// -----------------------------------------------------------------------------
+
+.grm-portal-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: $portal-header-height;
+  background-color: $portal-color-header-bg;
+  color: $portal-color-header-text;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 $spacing-6;
+  z-index: $portal-z-header;
+  box-shadow: $portal-card-shadow;
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    font-size: $font-size-lg;
+    font-weight: $portal-font-weight-semibold;
+    color: $portal-color-header-text;
+    text-decoration: none;
+    white-space: nowrap;
+
+    img {
+      height: 32px;
+      width: auto;
+    }
+  }
+
+  &__title {
+    font-size: $font-size-md;
+    font-weight: $portal-font-weight-semibold;
+    color: $portal-color-header-text;
+    text-align: center;
+    white-space: nowrap;
+
+    @media (max-width: $portal-breakpoint-md) {
+      display: none;
+    }
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: $spacing-4;
+    color: $portal-color-header-text;
+    font-size: $font-size-base;
+    white-space: nowrap;
+  }
+
+  &__user-name {
+    font-weight: $portal-font-weight-medium;
+
+    @media (max-width: $portal-breakpoint-sm) {
+      display: none;
+    }
+  }
+
+  &__logout {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-2;
+    padding: $spacing-2 $spacing-4;
+    background-color: transparent;
+    color: $portal-color-header-text;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: $border-radius-base;
+    font-size: $font-size-base;
+    font-weight: $portal-font-weight-medium;
+    cursor: pointer;
+    transition: all $portal-transition-fast;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.7);
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// SIDEBAR
+// -----------------------------------------------------------------------------
+
+.grm-portal-sidebar {
+  position: fixed;
+  top: $portal-header-height;
+  left: 0;
+  width: $portal-sidebar-width;
+  height: calc(100vh - #{$portal-header-height});
+  background-color: $portal-color-bg;
+  border-right: 1px solid $portal-border-color;
+  overflow-y: auto;
+  z-index: $portal-z-sidebar;
+  padding-top: $spacing-4;
+  transition: transform $portal-transition-base;
+
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+    padding: 0 $spacing-2;
+  }
+
+  &__nav-item {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    padding: $spacing-3 $spacing-4;
+    color: $portal-color-text-secondary;
+    font-size: $font-size-base;
+    font-weight: $portal-font-weight-regular;
+    text-decoration: none;
+    border-radius: $border-radius-base;
+    border-left: 4px solid transparent;
+    cursor: pointer;
+    transition: all $portal-transition-fast;
+
+    &:hover {
+      background-color: $portal-active-bg;
+      color: $portal-color-text;
+    }
+
+    &--active {
+      border-left-color: $portal-active-border;
+      background-color: $portal-active-bg;
+      color: $portal-active-text;
+      font-weight: $portal-font-weight-semibold;
+    }
+  }
+
+  &__nav-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__nav-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // Responsive: collapse on tablet
+  @media (max-width: $portal-breakpoint-lg) {
+    transform: translateX(-100%);
+
+    &--open {
+      transform: translateX(0);
+      box-shadow: $portal-card-shadow-lg;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// SIDEBAR OVERLAY (mobile)
+// -----------------------------------------------------------------------------
+
+.grm-portal-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: calc(#{$portal-z-sidebar} - 1);
+
+  @media (max-width: $portal-breakpoint-lg) {
+    &--visible {
+      display: block;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// MENU TOGGLE (mobile)
+// -----------------------------------------------------------------------------
+
+.grm-portal-menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  color: $portal-color-header-text;
+  cursor: pointer;
+  font-size: $font-size-xl;
+
+  @media (max-width: $portal-breakpoint-lg) {
+    display: flex;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// MAIN CONTENT
+// -----------------------------------------------------------------------------
+
+.grm-portal-main {
+  margin-left: $portal-sidebar-width;
+  margin-top: $portal-header-height;
+  padding: $spacing-6;
+  min-height: calc(100vh - #{$portal-header-height});
+  background-color: $portal-color-bg;
+
+  @media (max-width: $portal-breakpoint-lg) {
+    margin-left: 0;
+  }
+
+  @media (max-width: $portal-breakpoint-md) {
+    padding: $spacing-4;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// PAGE HEADER
+// -----------------------------------------------------------------------------
+
+.grm-portal-page-header {
+  margin-bottom: $spacing-6;
+
+  &__title {
+    font-size: $font-size-2xl;
+    font-weight: $portal-font-weight-semibold;
+    color: $portal-color-text;
+    margin: 0 0 $spacing-1 0;
+  }
+
+  &__subtitle {
+    font-size: $font-size-base;
+    color: $portal-color-text-muted;
+    margin: 0;
+  }
+}

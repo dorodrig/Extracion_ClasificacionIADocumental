@@ -1,0 +1,211 @@
+// =============================================================================
+// GRM Portal Cliente — Login
+// HU-07 — Pantalla de inicio de sesión del portal
+// =============================================================================
+
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+@use '../abstracts/portal-variables' as *;
+
+// -----------------------------------------------------------------------------
+// LOGIN WRAPPER
+// -----------------------------------------------------------------------------
+
+.grm-portal-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    $portal-login-gradient-start 0%,
+    $portal-login-gradient-end 100%
+  );
+  padding: $spacing-4;
+  font-family: $portal-font-family;
+}
+
+// -----------------------------------------------------------------------------
+// LOGIN CARD
+// -----------------------------------------------------------------------------
+
+.grm-portal-login__card {
+  background-color: $portal-color-bg-white;
+  max-width: $portal-login-card-max-width;
+  width: 100%;
+  border-radius: $border-radius-xl;
+  box-shadow: $portal-card-shadow-lg;
+  padding: $spacing-12;
+
+  @media (max-width: $portal-breakpoint-sm) {
+    padding: $spacing-8 $spacing-6;
+    border-radius: $portal-card-radius;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// CARD CONTENT
+// -----------------------------------------------------------------------------
+
+.grm-portal-login__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: $spacing-6;
+
+  img {
+    height: 48px;
+    width: auto;
+  }
+
+  &-text {
+    font-size: $font-size-xl;
+    font-weight: $portal-font-weight-bold;
+    color: $portal-color-header-bg;
+    margin-left: $spacing-3;
+  }
+}
+
+.grm-portal-login__title {
+  text-align: center;
+  font-size: $font-size-2xl;
+  font-weight: $portal-font-weight-semibold;
+  color: $portal-color-header-bg;
+  margin: 0 0 $spacing-2 0;
+}
+
+.grm-portal-login__subtitle {
+  text-align: center;
+  font-size: $font-size-base;
+  color: $portal-color-text-muted;
+  margin: 0 0 $spacing-8 0;
+}
+
+// -----------------------------------------------------------------------------
+// FORM
+// -----------------------------------------------------------------------------
+
+.grm-portal-login__form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-5;
+}
+
+.grm-portal-login__field {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+}
+
+.grm-portal-login__label {
+  font-size: $font-size-base;
+  font-weight: $portal-font-weight-medium;
+  color: $portal-color-text-secondary;
+}
+
+.grm-portal-login__input {
+  border: 1px solid $portal-border-color;
+  border-radius: $border-radius-md;
+  padding: $spacing-3 $spacing-4;
+  font-size: $font-size-base;
+  font-family: $portal-font-family;
+  color: $portal-color-text;
+  background-color: $portal-color-bg-white;
+  transition: border-color $portal-transition-fast, box-shadow $portal-transition-fast;
+
+  &::placeholder {
+    color: $portal-color-text-muted;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $portal-color-highlight;
+    box-shadow: 0 0 0 3px rgba($portal-color-highlight, 0.15);
+  }
+
+  &--error {
+    border-color: $portal-error-color;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba($portal-error-color, 0.15);
+    }
+  }
+}
+
+.grm-portal-login__error-text {
+  font-size: $font-size-sm;
+  color: $portal-error-color;
+  margin-top: $spacing-1;
+}
+
+// -----------------------------------------------------------------------------
+// SUBMIT BUTTON
+// -----------------------------------------------------------------------------
+
+.grm-portal-login__submit {
+  background-color: $portal-color-header-bg;
+  color: $portal-color-header-text;
+  border: none;
+  border-radius: $border-radius-md;
+  padding: $spacing-3 $spacing-4;
+  font-size: $font-size-md;
+  font-weight: $portal-font-weight-semibold;
+  font-family: $portal-font-family;
+  cursor: pointer;
+  transition: background-color $portal-transition-fast, transform $portal-transition-fast;
+  width: 100%;
+
+  &:hover:not(:disabled) {
+    background-color: darken(#1e3a5f, 8%);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &--loading {
+    position: relative;
+    color: transparent;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      left: 50%;
+      margin: -10px 0 0 -10px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: $portal-color-header-text;
+      border-radius: $border-radius-full;
+      animation: spin 600ms linear infinite;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// FOOTER
+// -----------------------------------------------------------------------------
+
+.grm-portal-login__footer {
+  text-align: center;
+  font-size: $font-size-sm;
+  color: $portal-color-text-muted;
+  margin-top: $spacing-6;
+  line-height: $line-height-base;
+
+  a {
+    color: $portal-color-highlight;
+    text-decoration: none;
+    font-weight: $portal-font-weight-medium;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

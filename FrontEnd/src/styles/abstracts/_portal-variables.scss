@@ -1,0 +1,152 @@
+// =============================================================================
+// GRM Portal Cliente — Design Tokens (Light Theme)
+// HU-07 — Variables específicas del portal con prefijo $portal-
+// NUNCA usar valores literales en componentes del portal.
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// 1. COLORES PRINCIPALES
+// -----------------------------------------------------------------------------
+
+// Header
+$portal-color-header-bg: #1e3a5f;
+$portal-color-header-text: #ffffff;
+
+// Highlight / Accent
+$portal-color-highlight: #2f81f7;
+$portal-color-highlight-hover: #1a6ddb;
+
+// Backgrounds
+$portal-color-bg: #f8f9fa;
+$portal-color-bg-white: #ffffff;
+
+// Text
+$portal-color-text: #212529;
+$portal-color-text-secondary: #495057;
+$portal-color-text-muted: #6c757d;
+
+// -----------------------------------------------------------------------------
+// 2. CARD / SURFACE
+// -----------------------------------------------------------------------------
+
+$portal-card-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08);
+$portal-card-shadow-lg: 0px 8px 24px rgba(0, 0, 0, 0.12);
+$portal-card-shadow-sm: 0px 1px 3px rgba(0, 0, 0, 0.06);
+$portal-card-radius: 12px;
+
+// -----------------------------------------------------------------------------
+// 3. TABLE
+// -----------------------------------------------------------------------------
+
+$portal-table-header-bg: #f1f3f5;
+$portal-table-row-even: #ffffff;
+$portal-table-row-odd: #f8f9fa;
+
+// -----------------------------------------------------------------------------
+// 4. ACTIVE MENU / SIDEBAR
+// -----------------------------------------------------------------------------
+
+$portal-active-border: #2f81f7;
+$portal-active-bg: #e8f4fd;
+$portal-active-text: #2f81f7;
+
+// -----------------------------------------------------------------------------
+// 5. BANNER
+// -----------------------------------------------------------------------------
+
+$portal-banner-bg: #e8f4fd;
+$portal-banner-border: #2f81f7;
+
+// -----------------------------------------------------------------------------
+// 6. BADGES — Tipo de Documento
+// -----------------------------------------------------------------------------
+
+// Pagaré
+$portal-badge-pagare-bg: #dbeafe;
+$portal-badge-pagare-text: #1d4ed8;
+
+// Cédula
+$portal-badge-cedula-bg: #dcfce7;
+$portal-badge-cedula-text: #166534;
+
+// Endoso
+$portal-badge-endoso-bg: #fff7ed;
+$portal-badge-endoso-text: #9a3412;
+
+// Otro
+$portal-badge-otro-bg: #f3f4f6;
+$portal-badge-otro-text: #374151;
+
+// -----------------------------------------------------------------------------
+// 7. VIEWER
+// -----------------------------------------------------------------------------
+
+$portal-viewer-panel-bg: #f8f9fa;
+$portal-viewer-doc-bg: #ffffff;
+$portal-viewer-paper-bg: #f0f0f0;
+
+// -----------------------------------------------------------------------------
+// 8. BORDERS
+// -----------------------------------------------------------------------------
+
+$portal-border-color: #dee2e6;
+$portal-border-color-light: #e9ecef;
+
+// -----------------------------------------------------------------------------
+// 9. TYPOGRAPHY
+// -----------------------------------------------------------------------------
+
+$portal-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+$portal-font-weight-regular: 400;
+$portal-font-weight-medium: 500;
+$portal-font-weight-semibold: 600;
+$portal-font-weight-bold: 700;
+
+$portal-metric-number-size: 36px;
+$portal-metric-label-size: 13px;
+
+// -----------------------------------------------------------------------------
+// 10. LAYOUT DIMENSIONS
+// -----------------------------------------------------------------------------
+
+$portal-sidebar-width: 240px;
+$portal-header-height: 60px;
+
+// -----------------------------------------------------------------------------
+// 11. TRANSITIONS
+// -----------------------------------------------------------------------------
+
+$portal-transition-fast: 150ms ease;
+$portal-transition-base: 250ms ease;
+$portal-transition-slow: 400ms ease;
+
+// -----------------------------------------------------------------------------
+// 12. Z-INDEX
+// -----------------------------------------------------------------------------
+
+$portal-z-sidebar: 100;
+$portal-z-header: 200;
+$portal-z-modal: 400;
+
+// -----------------------------------------------------------------------------
+// 13. BREAKPOINTS (mobile-first)
+// -----------------------------------------------------------------------------
+
+$portal-breakpoint-sm: 640px;
+$portal-breakpoint-md: 768px;
+$portal-breakpoint-lg: 1024px;
+$portal-breakpoint-xl: 1280px;
+
+// -----------------------------------------------------------------------------
+// 14. LOGIN
+// -----------------------------------------------------------------------------
+
+$portal-login-gradient-start: #ffffff;
+$portal-login-gradient-end: #e8f4fd;
+$portal-login-card-max-width: 420px;
+
+// -----------------------------------------------------------------------------
+// 15. ERRORS
+// -----------------------------------------------------------------------------
+
+$portal-error-color: #dc3545;

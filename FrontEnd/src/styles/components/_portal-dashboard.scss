@@ -1,0 +1,228 @@
+// =============================================================================
+// GRM Portal Cliente — Dashboard
+// HU-07 — Tarjetas de métricas, documentos recientes, banner pendientes
+// =============================================================================
+
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+@use '../abstracts/portal-variables' as *;
+
+// -----------------------------------------------------------------------------
+// METRIC CARDS ROW
+// -----------------------------------------------------------------------------
+
+.grm-portal-metrics {
+  display: flex;
+  flex-direction: row;
+  gap: $spacing-6;
+  flex-wrap: wrap;
+  margin-bottom: $spacing-6;
+}
+
+// -----------------------------------------------------------------------------
+// METRIC CARD
+// -----------------------------------------------------------------------------
+
+.grm-portal-metric-card {
+  background-color: $portal-color-bg-white;
+  border-radius: $portal-card-radius;
+  box-shadow: $portal-card-shadow;
+  padding: $spacing-6;
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+  transition: box-shadow $portal-transition-fast;
+
+  &:hover {
+    box-shadow: $portal-card-shadow-lg;
+  }
+
+  &__icon {
+    position: absolute;
+    top: $spacing-4;
+    right: $spacing-4;
+    width: 40px;
+    height: 40px;
+    border-radius: $border-radius-full;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $font-size-lg;
+
+    &--blue {
+      background-color: $portal-badge-pagare-bg;
+      color: $portal-badge-pagare-text;
+    }
+
+    &--green {
+      background-color: $portal-badge-cedula-bg;
+      color: $portal-badge-cedula-text;
+    }
+
+    &--orange {
+      background-color: $portal-badge-endoso-bg;
+      color: $portal-badge-endoso-text;
+    }
+
+    &--gray {
+      background-color: $portal-badge-otro-bg;
+      color: $portal-badge-otro-text;
+    }
+  }
+
+  &__value {
+    font-size: $portal-metric-number-size;
+    font-weight: $portal-font-weight-semibold;
+    color: $portal-color-header-bg;
+    text-align: center;
+    line-height: 1.2;
+    margin-bottom: $spacing-2;
+  }
+
+  &__label {
+    font-size: $portal-metric-label-size;
+    color: $portal-color-text-secondary;
+    text-align: center;
+    font-weight: $portal-font-weight-regular;
+  }
+
+  @media (max-width: $portal-breakpoint-md) {
+    min-width: 140px;
+    padding: $spacing-4;
+
+    &__value {
+      font-size: 28px;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// RECENT DOCUMENTS SECTION
+// -----------------------------------------------------------------------------
+
+.grm-portal-recent-docs {
+  background-color: $portal-color-bg-white;
+  border-radius: $portal-card-radius;
+  box-shadow: $portal-card-shadow;
+  padding: $spacing-6;
+  margin-bottom: $spacing-6;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-4;
+  }
+
+  &__title {
+    font-size: $font-size-lg;
+    font-weight: $portal-font-weight-semibold;
+    color: $portal-color-text;
+    margin: 0;
+  }
+
+  &__link {
+    font-size: $font-size-base;
+    color: $portal-color-highlight;
+    text-decoration: none;
+    font-weight: $portal-font-weight-medium;
+    transition: color $portal-transition-fast;
+
+    &:hover {
+      color: $portal-color-highlight-hover;
+      text-decoration: underline;
+    }
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+      text-align: left;
+      padding: $spacing-3 $spacing-4;
+      font-size: $font-size-base;
+      font-weight: $portal-font-weight-semibold;
+      color: $portal-color-text-secondary;
+      background-color: $portal-table-header-bg;
+      border-bottom: 1px solid $portal-border-color;
+
+      &:first-child {
+        border-radius: $border-radius-base 0 0 0;
+      }
+
+      &:last-child {
+        border-radius: 0 $border-radius-base 0 0;
+      }
+    }
+
+    td {
+      padding: $spacing-3 $spacing-4;
+      font-size: $font-size-base;
+      color: $portal-color-text;
+      border-bottom: 1px solid $portal-border-color-light;
+    }
+
+    tr:nth-child(even) td {
+      background-color: $portal-table-row-even;
+    }
+
+    tr:nth-child(odd) td {
+      background-color: $portal-table-row-odd;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  &__btn-ver {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-2;
+    padding: $spacing-1 $spacing-4;
+    background-color: transparent;
+    color: $portal-color-highlight;
+    border: 1px solid $portal-color-highlight;
+    border-radius: $border-radius-base;
+    font-size: $font-size-base;
+    font-weight: $portal-font-weight-medium;
+    cursor: pointer;
+    transition: all $portal-transition-fast;
+
+    &:hover {
+      background-color: $portal-color-highlight;
+      color: $portal-color-bg-white;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// BANNER PENDIENTES (En revisión)
+// -----------------------------------------------------------------------------
+
+.grm-portal-banner-pending {
+  background-color: $portal-banner-bg;
+  border-left: 4px solid $portal-banner-border;
+  padding: $spacing-4;
+  border-radius: $border-radius-md;
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  margin-bottom: $spacing-6;
+
+  &__icon {
+    font-size: $font-size-xl;
+    flex-shrink: 0;
+  }
+
+  &__text {
+    font-size: $font-size-base;
+    color: $portal-color-text;
+    line-height: $line-height-base;
+
+    strong {
+      font-weight: $portal-font-weight-semibold;
+    }
+  }
+}
