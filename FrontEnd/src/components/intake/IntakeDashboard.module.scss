@@ -46,6 +46,12 @@
     }
   }
 
+  &__step-title {
+    text-align: center;
+    color: $color-text-inverse;
+    margin-bottom: $spacing-6;
+  }
+
   &__mode-selection {
     display: flex;
     gap: $spacing-5;

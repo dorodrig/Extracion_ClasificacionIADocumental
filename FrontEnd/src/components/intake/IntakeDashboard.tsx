@@ -31,7 +31,7 @@ export const IntakeDashboard: React.FC = () => {
 
       {step === 1 && (
         <>
-          <h2 style={{ textAlign: 'center', color: '#fff', marginBottom: '24px' }}>¿Cómo deseas ingresar los documentos?</h2>
+          <h2 className={styles['grm-intake-dashboard__step-title']}>¿Cómo deseas ingresar los documentos?</h2>
           <div className={styles['grm-intake-dashboard__mode-selection']}>
             <div 
               className={`${styles['grm-intake-dashboard__mode-card']} ${ingestMode === 'scanner' ? styles['grm-intake-dashboard__mode-card--selected'] : ''}`}

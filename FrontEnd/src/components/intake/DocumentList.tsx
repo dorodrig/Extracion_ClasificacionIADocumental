@@ -3,6 +3,9 @@ import { useBatchStore } from '@/store/batchStore';
 import styles from './DocumentList.module.scss';
 import dashboardStyles from './IntakeDashboard.module.scss';
 import { Trash2, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { IngestionProgress } from './IngestionProgress';
+import { OmittedFilesAlert } from './OmittedFilesAlert';
+import { batchService } from '@/services/batchService';
 
 interface DocumentListProps {
   mode: 'scanner' | 'carpeta';
@@ -14,7 +17,11 @@ export const DocumentList: React.FC<DocumentListProps> = ({ mode }) => {
     removeDocument, 
     toggleDocumentSelection, 
     toggleAllSelection,
-    activeBatchId
+    activeBatchId,
+    batchStatus,
+    setBatchStatus,
+    omittedFilesBackend,
+    setOmittedFilesBackend
   } = useBatchStore();
 
   const selectedCount = documentsList.filter(d => d.selected).length;
@@ -22,8 +29,44 @@ export const DocumentList: React.FC<DocumentListProps> = ({ mode }) => {
   const totalSize = documentsList.reduce((acc, doc) => acc + (doc.selected ? doc.sizeMB : 0), 0);
   const allSelected = documentsList.length > 0 && selectedCount === documentsList.length;
 
+  const handleConfirmAndSend = async () => {
+    if (!activeBatchId) return;
+    
+    setBatchStatus('processing');
+    setOmittedFilesBackend([]);
+
+    const documentosPayload = documentsList
+      .filter(d => d.selected)
+      .map(d => ({
+        nombre_archivo: d.name,
+        extension: d.extension,
+        ruta_original: d.name, // Mock path
+        total_paginas: d.pages
+      }));
+
+    const response = await batchService.prepareBatch(activeBatchId, { documentos: documentosPayload });
+    
+    if (response.success && response.data) {
+      if (response.data.archivos_omitidos && response.data.archivos_omitidos.length > 0) {
+        setOmittedFilesBackend(response.data.archivos_omitidos);
+      }
+    } else {
+      setBatchStatus('error');
+    }
+  };
+
+  const handleComplete = () => {
+    // Redirigir al panel de monitoreo OCR
+    window.location.href = '/monitoreo-ocr';
+  };
+
+  if (batchStatus === 'processing') {
+    return <IngestionProgress batchId={activeBatchId!} onComplete={handleComplete} />;
+  }
+
   return (
     <div className={styles['grm-document-list']}>
+      <OmittedFilesAlert omittedFiles={omittedFilesBackend} count={omittedFilesBackend.length} />
       <div className={styles['grm-document-list__table-container']}>
         <table>
           <thead>
@@ -34,7 +77,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({ mode }) => {
               <th width="80">Páginas</th>
               <th width="100">Tamaño</th>
               {mode === 'scanner' && <th width="120">Estado</th>}
-              <th width="80" style={{ textAlign: 'center' }}>
+              <th width="80" className={styles['text-center']}>
                 {mode === 'carpeta' ? (
                   <input 
                     type="checkbox" 
@@ -61,7 +104,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({ mode }) => {
                     </span>
                   </td>
                 )}
-                <td style={{ textAlign: 'center' }}>
+                <td className={styles['text-center']}>
                   {mode === 'carpeta' ? (
                     <input 
                       type="checkbox" 
@@ -96,10 +139,9 @@ export const DocumentList: React.FC<DocumentListProps> = ({ mode }) => {
           Cancelar
         </button>
         <button 
-          className={`${dashboardStyles['grm-btn']} ${dashboardStyles['grm-btn--primary']}`}
-          style={{ backgroundColor: '#238636', borderColor: '#238636' }}
-          disabled={selectedCount === 0}
-          onClick={() => alert(`Enviando batch ${activeBatchId} al pipeline...`)}
+          className={`${dashboardStyles['grm-btn']} ${dashboardStyles['grm-btn--primary']} ${styles['btn-confirm']}`}
+          disabled={selectedCount === 0 || !activeBatchId}
+          onClick={handleConfirmAndSend}
         >
           ✓ Confirmar y Enviar
         </button>

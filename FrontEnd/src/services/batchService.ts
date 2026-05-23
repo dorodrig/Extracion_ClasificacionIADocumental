@@ -6,6 +6,26 @@ export interface Batch {
   estado: string;
 }
 
+export interface BatchStatusResponse {
+  batch_id: string;
+  estado: 'preparando' | 'en_proceso' | 'completado' | 'error';
+  documentos_preparados: number;
+  total_documentos: number;
+  ruta_temporal: string | null;
+  archivos_omitidos: string[];
+}
+
+export interface DocumentoIngestado {
+  nombre_archivo: string;
+  extension: string;
+  ruta_original: string;
+  total_paginas?: number;
+}
+
+export interface BatchPrepareRequest {
+  documentos: DocumentoIngestado[];
+}
+
 export interface APIResponse<T> {
   success: boolean;
   data?: T;
@@ -29,6 +49,26 @@ export const batchService = {
           estado: 'created'
         }
       };
+    }
+  },
+  
+  prepareBatch: async (batchId: string, data: BatchPrepareRequest): Promise<APIResponse<BatchStatusResponse>> => {
+    try {
+      const response = await api.post<APIResponse<BatchStatusResponse>>(`/api/v1/batches/${batchId}/prepare`, data);
+      return response.data;
+    } catch (error: any) {
+      console.error('Error in prepareBatch', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  getBatchStatus: async (batchId: string): Promise<APIResponse<BatchStatusResponse>> => {
+    try {
+      const response = await api.get<APIResponse<BatchStatusResponse>>(`/api/v1/batches/${batchId}/status`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Error in getBatchStatus', error);
+      return { success: false, error: error.message };
     }
   }
 };

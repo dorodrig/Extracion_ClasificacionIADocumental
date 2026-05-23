@@ -65,6 +65,16 @@
     }
   }
   
+  &__actions-right {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  &__icon-btn {
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  
   &__warning {
     color: $color-warning;
     font-size: $font-size-sm;

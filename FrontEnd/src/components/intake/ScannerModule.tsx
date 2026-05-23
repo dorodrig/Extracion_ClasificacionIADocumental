@@ -75,9 +75,9 @@ export const ScannerModule: React.FC = () => {
             </div>
           </div>
           
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div className={styles['grm-scanner-module__actions-right']}>
             <button className={`${dashboardStyles['grm-btn']} ${dashboardStyles['grm-btn--outline']}`}>
-              <RefreshCcw size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }}/> Buscar Escáneres
+              <RefreshCcw size={16} className={styles['grm-scanner-module__icon-btn']}/> Buscar Escáneres
             </button>
           </div>
           

@@ -67,4 +67,18 @@
     color: $color-text-secondary;
     &:hover { color: $color-danger; }
   }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .btn-confirm {
+    background-color: $color-success;
+    border-color: $color-success;
+    
+    &:hover:not(:disabled) {
+      background-color: darken($color-success, 10%);
+      border-color: darken($color-success, 10%);
+    }
+  }
 }

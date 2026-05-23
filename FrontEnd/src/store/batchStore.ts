@@ -18,10 +18,14 @@ interface BatchStore {
   ingestMode: IngestMode;
   documentsList: DocumentItem[];
   batchStatus: 'idle' | 'processing' | 'completed' | 'error';
+  batchProgress: { preparados: number; total: number } | null;
+  omittedFilesBackend: string[];
   
   setIngestMode: (mode: IngestMode) => void;
   setActiveBatch: (batchId: string) => void;
   setBatchStatus: (status: 'idle' | 'processing' | 'completed' | 'error') => void;
+  setBatchProgress: (progress: { preparados: number; total: number } | null) => void;
+  setOmittedFilesBackend: (files: string[]) => void;
   addDocuments: (docs: DocumentItem[]) => void;
   removeDocument: (id: string) => void;
   toggleDocumentSelection: (id: string) => void;
@@ -35,10 +39,14 @@ export const useBatchStore = create<BatchStore>((set) => ({
   ingestMode: 'carpeta', // Preselected based on rule
   documentsList: [],
   batchStatus: 'idle',
+  batchProgress: null,
+  omittedFilesBackend: [],
 
   setIngestMode: (mode) => set({ ingestMode: mode }),
   setActiveBatch: (batchId) => set({ activeBatchId: batchId }),
   setBatchStatus: (status) => set({ batchStatus: status }),
+  setBatchProgress: (progress) => set({ batchProgress: progress }),
+  setOmittedFilesBackend: (files) => set({ omittedFilesBackend: files }),
   
   addDocuments: (docs) => set((state) => ({ 
     documentsList: [...state.documentsList, ...docs] 

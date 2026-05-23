@@ -68,7 +68,7 @@ export const FolderModule: React.FC = () => {
           <div className={styles['grm-folder-module__selection-area']}>
             <Folder size={64} className={styles['icon']} />
             <p>Haz clic para seleccionar la carpeta que contiene los documentos a procesar.</p>
-            <p style={{ fontSize: '12px', color: '#8b949e' }}>Formatos soportados: PDF, JPG, PNG, TIFF</p>
+            <p className={styles['grm-folder-module__supported-formats']}>Formatos soportados: PDF, JPG, PNG, TIFF</p>
             
             <button className={`${dashboardStyles['grm-btn']} ${dashboardStyles['grm-btn--primary']}`}>
               📁 Seleccionar Carpeta
